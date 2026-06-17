@@ -88,14 +88,231 @@ const COACHES: Record<string, string> = {
   t48: 'توماس كريستيانسن', // Panama
 };
 
-// ===== Known star players with positions and numbers (for richer lineups) =====
+// ===== Known star players with positions and numbers (for richer lineups + cards) =====
 const STAR_PLAYERS: Record<string, Array<{ name: string; name_ar: string; position: string; number: number }>> = {
-  t37: [ // Argentina
-    { name: 'Lionel Messi', name_ar: 'ليونيل ميسي', position: 'FW', number: 10 },
-    { name: 'Emiliano Martínez', name_ar: 'إيميليانو مارتينيز', position: 'GK', number: 23 },
-    { name: 'Julián Álvarez', name_ar: 'خوليان ألفاريز', position: 'FW', number: 9 },
-    { name: 'Rodrigo De Paul', name_ar: 'رودريغو دي بول', position: 'MF', number: 7 },
-    { name: 'Nicolás Otamendi', name_ar: 'نيكولاس أوتاميندي', position: 'DF', number: 19 },
+  t1: [ // Mexico
+    { name: 'Santiago Giménez', name_ar: 'سانتياغو خيمينيز', position: 'FW', number: 9 },
+    { name: 'Hirving Lozano', name_ar: 'هيرفينغ لوزانو', position: 'FW', number: 22 },
+    { name: 'Edson Álvarez', name_ar: 'إديسون ألفاريز', position: 'MF', number: 4 },
+    { name: 'César Montes', name_ar: 'سيزار مونتيس', position: 'DF', number: 3 },
+    { name: 'Guillermo Ochoa', name_ar: 'غويليرمو أوتشوا', position: 'GK', number: 1 },
+  ],
+  t2: [ // South Africa
+    { name: 'Percy Tau', name_ar: 'برسي تاو', position: 'FW', number: 22 },
+    { name: 'Lyle Foster', name_ar: 'لايل فوستر', position: 'FW', number: 19 },
+    { name: 'Teboho Mokoena', name_ar: 'تيبوهو موكوينا', position: 'MF', number: 8 },
+    { name: 'Sianda Xulu', name_ar: 'سياندا زولو', position: 'DF', number: 4 },
+    { name: 'Ronwen Williams', name_ar: 'رونوين ويليامز', position: 'GK', number: 1 },
+  ],
+  t3: [ // South Korea
+    { name: 'Son Heung-min', name_ar: 'سون هيونغ مين', position: 'FW', number: 7 },
+    { name: 'Lee Kang-in', name_ar: 'لي كانغ إن', position: 'MF', number: 18 },
+    { name: 'Hwang Hee-chan', name_ar: 'هوانغ هي تشان', position: 'FW', number: 11 },
+    { name: 'Kim Min-jae', name_ar: 'كيم مين جاي', position: 'DF', number: 4 },
+    { name: 'Kim Seung-gyu', name_ar: 'كيم سيونغ غيو', position: 'GK', number: 1 },
+  ],
+  t4: [ // Czech Republic
+    { name: 'Patrik Schick', name_ar: 'باتريك شيك', position: 'FW', number: 10 },
+    { name: 'Tomáš Souček', name_ar: 'توماس سوتشيك', position: 'MF', number: 8 },
+    { name: 'Vladimír Coufal', name_ar: 'فلاديمير كوفال', position: 'DF', number: 5 },
+    { name: 'Tomáš Holeš', name_ar: 'توماس هوليس', position: 'DF', number: 3 },
+    { name: 'Jindřich Staněk', name_ar: 'يندريش ستانيك', position: 'GK', number: 1 },
+  ],
+  t5: [ // Canada
+    { name: 'Alphonso Davies', name_ar: 'ألفونسو ديفيز', position: 'DF', number: 19 },
+    { name: 'Jonathan David', name_ar: 'جوناثان ديفيد', position: 'FW', number: 20 },
+    { name: 'Cyle Larin', name_ar: 'سايل لارين', position: 'FW', number: 17 },
+    { name: 'Stephen Eustáquio', name_ar: 'ستيفن أوستاكيو', position: 'MF', number: 7 },
+    { name: 'Maxime Crépeau', name_ar: 'ماكسيم كريبو', position: 'GK', number: 1 },
+  ],
+  t6: [ // Bosnia
+    { name: 'Edin Džeko', name_ar: 'إدين ديزكو', position: 'FW', number: 11 },
+    { name: 'Miralem Pjanić', name_ar: 'ميراليم بيانيتش', position: 'MF', number: 8 },
+    { name: 'Sead Kolašinac', name_ar: 'سعاد كولاشيناتس', position: 'DF', number: 3 },
+    { name: 'Amar Dedić', name_ar: 'عمار ديديتش', position: 'DF', number: 22 },
+    { name: 'Nikola Vasilj', name_ar: 'نيكولا فاسيلي', position: 'GK', number: 1 },
+  ],
+  t7: [ // Qatar
+    { name: 'Akram Afif', name_ar: 'أكرم عفيف', position: 'FW', number: 11 },
+    { name: 'Almoez Ali', name_ar: 'المعز علي', position: 'FW', number: 9 },
+    { name: 'Hassan Al-Haydos', name_ar: 'حسن الهيدوس', position: 'MF', number: 10 },
+    { name: 'Boualem Khoukhi', name_ar: 'بوعلم خوخي', position: 'DF', number: 2 },
+    { name: 'Saad Al-Sheeb', name_ar: 'سعد الشيب', position: 'GK', number: 1 },
+  ],
+  t8: [ // Switzerland
+    { name: 'Granit Xhaka', name_ar: 'غرانيت تشاكا', position: 'MF', number: 10 },
+    { name: 'Xherdan Shaqiri', name_ar: 'شيردان شاكيري', position: 'MF', number: 23 },
+    { name: 'Breel Embolo', name_ar: 'بريل إمبولو', position: 'FW', number: 7 },
+    { name: 'Manuel Akanji', name_ar: 'مانويل اكانجي', position: 'DF', number: 5 },
+    { name: 'Yann Sommer', name_ar: 'يان سومر', position: 'GK', number: 1 },
+  ],
+  t9: [ // Brazil
+    { name: 'Vinícius Júnior', name_ar: 'فينيسيوس جونيور', position: 'FW', number: 7 },
+    { name: 'Rodrygo', name_ar: 'رودريغو', position: 'FW', number: 10 },
+    { name: 'Casemiro', name_ar: 'كاسيميرو', position: 'MF', number: 5 },
+    { name: 'Marquinhos', name_ar: 'ماركينيوس', position: 'DF', number: 4 },
+    { name: 'Alisson', name_ar: 'أليسون', position: 'GK', number: 1 },
+  ],
+  t10: [ // Morocco
+    { name: 'Achraf Hakimi', name_ar: 'أشرف حكيمي', position: 'DF', number: 2 },
+    { name: 'Hakim Ziyech', name_ar: 'حكيم زياش', position: 'MF', number: 7 },
+    { name: 'Youssef En-Nesyri', name_ar: 'يوسف النصيري', position: 'FW', number: 19 },
+    { name: 'Romain Saïss', name_ar: 'رومان سايس', position: 'DF', number: 5 },
+    { name: 'Yassine Bounou', name_ar: 'ياسين بونو', position: 'GK', number: 1 },
+  ],
+  t11: [ // Haiti
+    { name: 'Duckens Nazon', name_ar: 'دوكنس نازون', position: 'FW', number: 9 },
+    { name: 'Frantzdy Pierrot', name_ar: 'فرانتزدي بييرو', position: 'FW', number: 11 },
+    { name: 'Carlens Arcus', name_ar: 'كارلينس أركوس', position: 'DF', number: 21 },
+    { name: 'Bryan Labissière', name_ar: 'برايان لابيسير', position: 'MF', number: 6 },
+    { name: 'Johny Placide', name_ar: 'جوني بلاسيد', position: 'GK', number: 1 },
+  ],
+  t12: [ // Scotland
+    { name: 'Scott McTominay', name_ar: 'سكوت ماكتوميناي', position: 'MF', number: 4 },
+    { name: 'Andy Robertson', name_ar: 'آندي روبرتسون', position: 'DF', number: 3 },
+    { name: 'John McGinn', name_ar: 'جون ماكين', position: 'MF', number: 7 },
+    { name: 'Che Adams', name_ar: 'تشيه آدامز', position: 'FW', number: 9 },
+    { name: 'Angus Gunn', name_ar: 'أنغوس غون', position: 'GK', number: 1 },
+  ],
+  t13: [ // USA
+    { name: 'Christian Pulisic', name_ar: 'كريستيان بوليسيتش', position: 'FW', number: 10 },
+    { name: 'Weston McKennie', name_ar: 'ويستون ماكيني', position: 'MF', number: 8 },
+    { name: 'Folarin Balogun', name_ar: 'فولارين بالوغون', position: 'FW', number: 9 },
+    { name: 'Tyler Adams', name_ar: 'تايلر آدامز', position: 'MF', number: 4 },
+    { name: 'Matt Turner', name_ar: 'مات تورنر', position: 'GK', number: 1 },
+  ],
+  t14: [ // Paraguay
+    { name: 'Miguel Almirón', name_ar: 'ميغيل ألميرون', position: 'FW', number: 10 },
+    { name: 'Antonio Sanabria', name_ar: 'أنطونيو سانابريا', position: 'FW', number: 9 },
+    { name: 'Mathías Villasanti', name_ar: 'ماتياس فيلاسانتي', position: 'MF', number: 5 },
+    { name: 'Gustavo Gómez', name_ar: 'غوستافو غوميز', position: 'DF', number: 4 },
+    { name: 'Carlos Coronel', name_ar: 'كارلوس كورونيل', position: 'GK', number: 1 },
+  ],
+  t15: [ // Australia
+    { name: 'Mathew Leckie', name_ar: 'ماثيو ليكي', position: 'FW', number: 7 },
+    { name: 'Jackson Irvine', name_ar: 'جاكسون إيرفين', position: 'MF', number: 22 },
+    { name: 'Harry Souttar', name_ar: 'هاري سوتار', position: 'DF', number: 19 },
+    { name: 'Riley McGree', name_ar: 'رايلي ماكجري', position: 'MF', number: 15 },
+    { name: 'Mathew Ryan', name_ar: 'ماثيو رايان', position: 'GK', number: 1 },
+  ],
+  t16: [ // Turkey
+    { name: 'Hakan Çalhanoğlu', name_ar: 'هاكان تشالهان أوغلو', position: 'MF', number: 10 },
+    { name: 'Cengiz Ünder', name_ar: 'جينغيز أوندير', position: 'FW', number: 7 },
+    { name: 'Merih Demiral', name_ar: 'ميريه ديميرال', position: 'DF', number: 4 },
+    { name: 'Çağlar Söyüncü', name_ar: 'تشاغلار صويونجو', position: 'DF', number: 3 },
+    { name: 'Uğurcan Çakır', name_ar: 'أوغوركان تشاكير', position: 'GK', number: 1 },
+  ],
+  t17: [ // Germany
+    { name: 'Jamal Musiala', name_ar: 'جمال موسيالا', position: 'MF', number: 10 },
+    { name: 'Florian Wirtz', name_ar: 'فلوريان فيرتز', position: 'MF', number: 17 },
+    { name: 'Kai Havertz', name_ar: 'كايت هافرتز', position: 'FW', number: 9 },
+    { name: 'Joshua Kimmich', name_ar: 'جوشوا كيميتش', position: 'DF', number: 6 },
+    { name: 'Antonio Rüdiger', name_ar: 'أنطونيو روديغر', position: 'DF', number: 2 },
+  ],
+  t18: [ // Curaçao
+    { name: 'Leandro Bacuna', name_ar: 'لياندرو باكونا', position: 'MF', number: 10 },
+    { name: 'Jurich Carolina', name_ar: 'يوريش كارولينا', position: 'FW', number: 7 },
+    { name: 'Cuco Martina', name_ar: 'كوكو مارتينا', position: 'DF', number: 2 },
+    { name: 'Sherel Floranus', name_ar: 'شيريل فلورانوس', position: 'DF', number: 4 },
+    { name: 'Eloy Room', name_ar: 'إيلوي روم', position: 'GK', number: 1 },
+  ],
+  t19: [ // Ivory Coast
+    { name: 'Sébastien Haller', name_ar: 'سيباستيان هالر', position: 'FW', number: 9 },
+    { name: 'Franck Kessié', name_ar: 'فرانك كيسي', position: 'MF', number: 19 },
+    { name: 'Ibrahim Sangaré', name_ar: 'إبراهيم سانغاري', position: 'MF', number: 6 },
+    { name: 'Odilon Kossounou', name_ar: 'أوديلون كوسونو', position: 'DF', number: 4 },
+    { name: 'Yahia Fofana', name_ar: 'يحيا فوفانا', position: 'GK', number: 1 },
+  ],
+  t20: [ // Ecuador
+    { name: 'Enner Valencia', name_ar: 'إينير فالنسيا', position: 'FW', number: 13 },
+    { name: 'Moisés Caicedo', name_ar: 'مويزيس كايسيدو', position: 'MF', number: 23 },
+    { name: 'Kendry Páez', name_ar: 'كندري باز', position: 'MF', number: 20 },
+    { name: 'Piero Hincapié', name_ar: 'بييرو هينكابي', position: 'DF', number: 3 },
+    { name: 'Hernán Galíndez', name_ar: 'هيرنان غالينديز', position: 'GK', number: 1 },
+  ],
+  t21: [ // Netherlands
+    { name: 'Memphis Depay', name_ar: 'ممفيس ديباي', position: 'FW', number: 10 },
+    { name: 'Virgil van Dijk', name_ar: 'فيرجيل فان دايك', position: 'DF', number: 4 },
+    { name: 'Cody Gakpo', name_ar: 'كودي خاكبو', position: 'FW', number: 11 },
+    { name: 'Frenkie de Jong', name_ar: 'فرينكي دي يونغ', position: 'MF', number: 21 },
+    { name: 'Bart Verbruggen', name_ar: 'بارت فيربروغن', position: 'GK', number: 1 },
+  ],
+  t22: [ // Japan
+    { name: 'Takefusa Kubo', name_ar: 'تاكيفوسا كوبو', position: 'FW', number: 11 },
+    { name: 'Kaoru Mitoma', name_ar: 'كاورو ميتوما', position: 'FW', number: 14 },
+    { name: 'Wataru Endo', name_ar: 'واتارو إندو', position: 'MF', number: 6 },
+    { name: 'Takehiro Tomiyasu', name_ar: 'تاكيهيرو تومياسو', position: 'DF', number: 16 },
+    { name: 'Zion Suzuki', name_ar: 'زيون سوزوكي', position: 'GK', number: 1 },
+  ],
+  t23: [ // Sweden
+    { name: 'Alexander Isak', name_ar: 'ألكسندر إيساك', position: 'FW', number: 9 },
+    { name: 'Dejan Kulusevski', name_ar: 'ديجان كولوسيفسكي', position: 'MF', number: 10 },
+    { name: 'Viktor Gyökeres', name_ar: 'فيكتور غيوكيريس', position: 'FW', number: 11 },
+    { name: 'Victor Lindelöf', name_ar: 'فيكتور ليندلوف', position: 'DF', number: 3 },
+    { name: 'Robin Olsen', name_ar: 'روبن أولسن', position: 'GK', number: 1 },
+  ],
+  t24: [ // Tunisia
+    { name: 'Aïssa Laïdouni', name_ar: 'عيسى العيدوني', position: 'MF', number: 14 },
+    { name: 'Youssef Msakni', name_ar: 'يوسف المساكني', position: 'FW', number: 7 },
+    { name: 'Hannibal Mejbri', name_ar: 'حنجل المجبري', position: 'MF', number: 6 },
+    { name: 'Montassar Talbi', name_ar: 'منتصر الطالبي', position: 'DF', number: 4 },
+    { name: 'Aymen Dahmen', name_ar: 'أيمن دحمان', position: 'GK', number: 22 },
+  ],
+  t25: [ // Belgium
+    { name: 'Kevin De Bruyne', name_ar: 'كيفين دي بروين', position: 'MF', number: 7 },
+    { name: 'Romelu Lukaku', name_ar: 'روميلو لوكاكو', position: 'FW', number: 9 },
+    { name: 'Jérémy Doku', name_ar: 'جيريمي دوكو', position: 'FW', number: 22 },
+    { name: 'Youri Tielemans', name_ar: 'يوري تيليمانس', position: 'MF', number: 8 },
+    { name: 'Thibaut Courtois', name_ar: 'تيبو كورتوا', position: 'GK', number: 1 },
+  ],
+  t26: [ // Egypt
+    { name: 'Mohamed Salah', name_ar: 'محمد صلاح', position: 'FW', number: 10 },
+    { name: 'Mohamed Elneny', name_ar: 'محمد النني', position: 'MF', number: 17 },
+    { name: 'Trezeguet', name_ar: 'تريزيغيه', position: 'FW', number: 21 },
+    { name: 'Ahmed Hegazi', name_ar: 'أحمد حجازي', position: 'DF', number: 6 },
+    { name: 'Mohamed El-Shenawy', name_ar: 'محمد الشناوي', position: 'GK', number: 1 },
+  ],
+  t27: [ // Iran
+    { name: 'Mehdi Taremi', name_ar: 'مهدي طارمي', position: 'FW', number: 9 },
+    { name: 'Sardar Azmoun', name_ar: 'سردار أزمون', position: 'FW', number: 20 },
+    { name: 'Alireza Jahanbakhsh', name_ar: 'علي رضا جهانبخش', position: 'FW', number: 7 },
+    { name: 'Saeid Ezatolahi', name_ar: 'سعيد عزتولاهي', position: 'MF', number: 6 },
+    { name: 'Alireza Beiranvand', name_ar: 'علي رضا بيرانفند', position: 'GK', number: 1 },
+  ],
+  t28: [ // New Zealand
+    { name: 'Chris Wood', name_ar: 'كريس وود', position: 'FW', number: 9 },
+    { name: 'Marko Stamenić', name_ar: 'ماركو ستامينيتش', position: 'MF', number: 8 },
+    { name: 'Liberato Cacace', name_ar: 'ليبيراتو كاكاسي', position: 'DF', number: 3 },
+    { name: 'Tyler Boyd', name_ar: 'تايلر بويد', position: 'FW', number: 11 },
+    { name: 'Oliver Sail', name_ar: 'أوليفر سايل', position: 'GK', number: 1 },
+  ],
+  t29: [ // Spain
+    { name: 'Lamine Yamal', name_ar: 'لامين يامال', position: 'FW', number: 19 },
+    { name: 'Rodri', name_ar: 'رودري', position: 'MF', number: 16 },
+    { name: 'Pedri', name_ar: 'بيدري', position: 'MF', number: 20 },
+    { name: 'Aymeric Laporte', name_ar: 'إيمريك لابورت', position: 'DF', number: 14 },
+    { name: 'Unai Simón', name_ar: 'أوناي سيمون', position: 'GK', number: 23 },
+  ],
+  t30: [ // Cape Verde
+    { name: 'Bebé', name_ar: 'بيبي', position: 'FW', number: 11 },
+    { name: 'Garry Rodrigues', name_ar: 'غاري رودريغيس', position: 'FW', number: 7 },
+    { name: 'Kevin Pina', name_ar: 'كيفين بينا', position: 'MF', number: 8 },
+    { name: 'Roberto Lopes', name_ar: 'روبرتو لوبيس', position: 'DF', number: 4 },
+    { name: 'Vozinha', name_ar: 'فوزينيا', position: 'GK', number: 1 },
+  ],
+  t31: [ // Saudi Arabia
+    { name: 'Salem Al-Dawsari', name_ar: 'سالم الدوسري', position: 'FW', number: 10 },
+    { name: 'Salem Al-Shehri', name_ar: 'سالم الشهري', position: 'FW', number: 11 },
+    { name: 'Saud Abdulhamid', name_ar: 'سعود عبدالحميد', position: 'DF', number: 6 },
+    { name: 'Mohammed Kanno', name_ar: 'محمد كانو', position: 'MF', number: 23 },
+    { name: 'Mohammed Al-Owais', name_ar: 'محمد العويس', position: 'GK', number: 21 },
+  ],
+  t32: [ // Uruguay
+    { name: 'Federico Valverde', name_ar: 'فيدريكو فالفيردي', position: 'MF', number: 15 },
+    { name: 'Darwin Núñez', name_ar: 'داروين نونيز', position: 'FW', number: 11 },
+    { name: 'Facundo Pellistri', name_ar: 'فاكوندو بيليستري', position: 'FW', number: 7 },
+    { name: 'Ronald Araújo', name_ar: 'رونالد أراوخو', position: 'DF', number: 4 },
+    { name: 'Sergio Rochet', name_ar: 'سيرجيو روتشيت', position: 'GK', number: 23 },
   ],
   t33: [ // France
     { name: 'K. Mbappé', name_ar: 'كيليان مبابي', position: 'FW', number: 10 },
@@ -104,39 +321,110 @@ const STAR_PLAYERS: Record<string, Array<{ name: string; name_ar: string; positi
     { name: 'William Saliba', name_ar: 'ويليام ساليبا', position: 'DF', number: 17 },
     { name: 'Mike Maignan', name_ar: 'مايك ماينان', position: 'GK', number: 16 },
   ],
+  t34: [ // Senegal
+    { name: 'Sadio Mané', name_ar: 'ساديو ماني', position: 'FW', number: 10 },
+    { name: 'Kalidou Koulibaly', name_ar: 'كاليدو كوليبالي', position: 'DF', number: 3 },
+    { name: 'Idrissa Gueye', name_ar: 'إدريسا غي', position: 'MF', number: 5 },
+    { name: 'Ismaïla Sarr', name_ar: 'إسماعيلا سار', position: 'FW', number: 18 },
+    { name: 'Édouard Mendy', name_ar: 'إدوارد ميندي', position: 'GK', number: 16 },
+  ],
+  t35: [ // Iraq
+    { name: 'Aymen Hussein', name_ar: 'أيمن حسين', position: 'FW', number: 9 },
+    { name: 'Mohammed Ali', name_ar: 'محمد علي', position: 'FW', number: 10 },
+    { name: 'Amir Al-Ammari', name_ar: 'أمير العمري', position: 'MF', number: 21 },
+    { name: 'Rebin Sulaka', name_ar: 'ريبين سولاقا', position: 'DF', number: 4 },
+    { name: 'Jalal Hassan', name_ar: 'جلال حسن', position: 'GK', number: 1 },
+  ],
   t36: [ // Norway
     { name: 'Erling Haaland', name_ar: 'إيرلينغ هالاند', position: 'FW', number: 9 },
     { name: 'Martin Ødegaard', name_ar: 'مارتن أوديغارد', position: 'MF', number: 10 },
+    { name: 'Alexander Sørloth', name_ar: 'ألكسندر سورلوث', position: 'FW', number: 7 },
+    { name: 'Leo Østigård', name_ar: 'ليو أوستيغارد', position: 'DF', number: 15 },
+    { name: 'Ørjan Nyland', name_ar: 'أوريان نيلاند', position: 'GK', number: 1 },
   ],
-  t9: [ // Brazil
-    { name: 'Vinícius Júnior', name_ar: 'فينيسيوس جونيور', position: 'FW', number: 7 },
-    { name: 'Rodrygo', name_ar: 'رودريغو', position: 'FW', number: 10 },
-    { name: 'Casemiro', name_ar: 'كاسيميرو', position: 'MF', number: 5 },
+  t37: [ // Argentina
+    { name: 'Lionel Messi', name_ar: 'ليونيل ميسي', position: 'FW', number: 10 },
+    { name: 'Emiliano Martínez', name_ar: 'إيميليانو مارتينيز', position: 'GK', number: 23 },
+    { name: 'Julián Álvarez', name_ar: 'خوليان ألفاريز', position: 'FW', number: 9 },
+    { name: 'Rodrigo De Paul', name_ar: 'رودريغو دي بول', position: 'MF', number: 7 },
+    { name: 'Nicolás Otamendi', name_ar: 'نيكولاس أوتاميندي', position: 'DF', number: 19 },
   ],
-  t29: [ // Spain
-    { name: 'Lamine Yamal', name_ar: 'لامين يامال', position: 'FW', number: 19 },
-    { name: 'Rodri', name_ar: 'رودري', position: 'MF', number: 16 },
-    { name: 'Pedri', name_ar: 'بيدري', position: 'MF', number: 20 },
+  t38: [ // Algeria
+    { name: 'Riyad Mahrez', name_ar: 'رياض محرز', position: 'FW', number: 7 },
+    { name: 'Ismaël Bennacer', name_ar: 'إسماعيل بن ناصر', position: 'MF', number: 4 },
+    { name: 'Islam Slimani', name_ar: 'إسلام سليماني', position: 'FW', number: 18 },
+    { name: 'Aïssa Mandi', name_ar: 'عيسى ماندي', position: 'DF', number: 21 },
+    { name: 'Anthony Mandrea', name_ar: 'أنتوني ماندريا', position: 'GK', number: 1 },
+  ],
+  t39: [ // Austria
+    { name: 'Marcel Sabitzer', name_ar: 'مارسيل سابيتزر', position: 'MF', number: 9 },
+    { name: 'Marko Arnautović', name_ar: 'ماركو أرناوتوفيتش', position: 'FW', number: 7 },
+    { name: 'Konrad Laimer', name_ar: 'كونراد لايمر', position: 'MF', number: 10 },
+    { name: 'David Alaba', name_ar: 'ديفيد ألابا', position: 'DF', number: 4 },
+    { name: 'Patrick Pentz', name_ar: 'باتريك بينتز', position: 'GK', number: 1 },
+  ],
+  t40: [ // Jordan
+    { name: 'Musa Al-Taamari', name_ar: 'موسى التعمري', position: 'FW', number: 7 },
+    { name: 'Yazan Al-Naimat', name_ar: 'يزن النعيمات', position: 'FW', number: 9 },
+    { name: 'Nour Al-Rawabdeh', name_ar: 'نور الروابده', position: 'MF', number: 23 },
+    { name: 'Yazan Al-Arab', name_ar: 'يزن العرب', position: 'DF', number: 5 },
+    { name: 'Yazid Abu Layla', name_ar: 'يزيد أبو ليلى', position: 'GK', number: 1 },
+  ],
+  t41: [ // Portugal
+    { name: 'Cristiano Ronaldo', name_ar: 'كريستيانو رونالدو', position: 'FW', number: 7 },
+    { name: 'Bruno Fernandes', name_ar: 'برونو فيرنانديز', position: 'MF', number: 8 },
+    { name: 'Bernardo Silva', name_ar: 'برناردو سيلفا', position: 'MF', number: 10 },
+    { name: 'Rúben Dias', name_ar: 'روبن دياز', position: 'DF', number: 4 },
+    { name: 'Diogo Costa', name_ar: 'ديوغو كوستا', position: 'GK', number: 22 },
+  ],
+  t42: [ // DR Congo
+    { name: 'Cédric Bakambu', name_ar: 'سيدريك باكامبو', position: 'FW', number: 9 },
+    { name: 'Yoane Wissa', name_ar: 'يواني ويسا', position: 'FW', number: 11 },
+    { name: 'Chancel Mbemba', name_ar: 'شانسيل مبيمبا', position: 'DF', number: 4 },
+    { name: 'Samuel Moutoussamy', name_ar: 'صموئيل موتوسامي', position: 'MF', number: 6 },
+    { name: 'Lionel Mpasi', name_ar: 'ليونيل مباسي', position: 'GK', number: 1 },
+  ],
+  t43: [ // Uzbekistan
+    { name: 'Eldor Shomurodov', name_ar: 'إلدور شومورودوف', position: 'FW', number: 9 },
+    { name: 'Abbósbek Fayzulláyev', name_ar: 'عبوسبك فايزولايف', position: 'MF', number: 10 },
+    { name: 'Jaloliddin Masharipov', name_ar: 'جلال الدين مشاريبوف', position: 'MF', number: 7 },
+    { name: 'Rustamjon Ashurmatov', name_ar: 'رستام أشورماتوف', position: 'DF', number: 4 },
+    { name: 'Abduvohid Nematov', name_ar: 'عبد الواحد نيماتوف', position: 'GK', number: 1 },
+  ],
+  t44: [ // Colombia
+    { name: 'James Rodríguez', name_ar: 'جيمس رودريغيس', position: 'MF', number: 10 },
+    { name: 'Luis Díaz', name_ar: 'لويس دياز', position: 'FW', number: 7 },
+    { name: 'Jhon Durán', name_ar: 'جون دوران', position: 'FW', number: 9 },
+    { name: 'Davinson Sánchez', name_ar: 'دافينسون سانشيز', position: 'DF', number: 23 },
+    { name: 'Camilo Vargas', name_ar: 'كاميلو فارغاس', position: 'GK', number: 1 },
   ],
   t45: [ // England
     { name: 'Jude Bellingham', name_ar: 'جود بيلينغهام', position: 'MF', number: 22 },
     { name: 'Harry Kane', name_ar: 'هاري كين', position: 'FW', number: 9 },
     { name: 'Bukayo Saka', name_ar: 'بوكايو ساكا', position: 'FW', number: 17 },
+    { name: 'Phil Foden', name_ar: 'فيل فودين', position: 'MF', number: 11 },
+    { name: 'Jordan Pickford', name_ar: 'جوردان بيكفورد', position: 'GK', number: 1 },
   ],
-  t41: [ // Portugal
-    { name: 'Cristiano Ronaldo', name_ar: 'كريستيانو رونالدو', position: 'FW', number: 7 },
-    { name: 'Bruno Fernandes', name_ar: 'برونو فيرنانديز', position: 'MF', number: 8 },
+  t46: [ // Croatia
+    { name: 'Luka Modrić', name_ar: 'لوكا مودريتش', position: 'MF', number: 10 },
+    { name: 'Andrej Kramarić', name_ar: 'أندريه كراماريتش', position: 'FW', number: 9 },
+    { name: 'Mateo Kovačić', name_ar: 'ماتيو كوفاتشيتش', position: 'MF', number: 8 },
+    { name: 'Joško Gvardiol', name_ar: 'يوشكو غفارديول', position: 'DF', number: 20 },
+    { name: 'Dominik Livaković', name_ar: 'دومينيك ليفاكوفيتش', position: 'GK', number: 1 },
   ],
-  t17: [ // Germany
-    { name: 'Jamal Musiala', name_ar: 'جمال موسيالا', position: 'MF', number: 10 },
-    { name: 'Florian Wirtz', name_ar: 'فلوريان فيرتز', position: 'MF', number: 17 },
+  t47: [ // Ghana
+    { name: 'Mohammed Kudus', name_ar: 'محمد كودوس', position: 'FW', number: 20 },
+    { name: 'André Ayew', name_ar: 'أندريه آيو', position: 'FW', number: 10 },
+    { name: 'Thomas Partey', name_ar: 'توماس بارتي', position: 'MF', number: 5 },
+    { name: 'Alexander Djiku', name_ar: 'ألكسندر دجيكو', position: 'DF', number: 4 },
+    { name: 'Lawrence Ati-Zigi', name_ar: 'لورانس أتي زيجي', position: 'GK', number: 1 },
   ],
-  t21: [ // Netherlands
-    { name: 'Memphis Depay', name_ar: 'ممفيس ديباي', position: 'FW', number: 10 },
-    { name: 'Virgil van Dijk', name_ar: 'فيرجيل فان دايك', position: 'DF', number: 4 },
-  ],
-  t31: [ // Saudi Arabia
-    { name: 'Salem Al-Dawsari', name_ar: 'سالم الدوسري', position: 'FW', number: 10 },
+  t48: [ // Panama
+    { name: 'Aníbal Godoy', name_ar: 'أنيبال غودوي', position: 'MF', number: 6 },
+    { name: 'José Fajardo', name_ar: 'خوسيه فاخاردو', position: 'FW', number: 8 },
+    { name: 'Eric Davis', name_ar: 'إيريك ديفيس', position: 'DF', number: 15 },
+    { name: 'Andrés Andrade', name_ar: 'أندريس أندرادي', position: 'MF', number: 20 },
+    { name: 'Orlando Mosquera', name_ar: 'أورلاندو موسكيرا', position: 'GK', number: 1 },
   ],
 };
 
@@ -252,6 +540,29 @@ function genStats(homeScore: number, awayScore: number, isLive = false) {
 }
 
 // ===== Sync functions =====
+
+async function syncStadiums() {
+  console.log('🏟️ Syncing stadiums...');
+  try {
+    const stadiums: any[] = await apiGet('/get/stadiums');
+    const rows = stadiums.map((s: any) => ({
+      id: `s${s.id}`,
+      name: s.name_en,
+      name_ar: s.name_fa,
+      city: s.city_en,
+      city_ar: s.city_fa,
+      country: s.country_en === 'Mexico' ? 'MEX' : s.country_en === 'Canada' ? 'CAN' : 'USA',
+      capacity: s.capacity || 0,
+    }));
+    const { error } = await sb.from('stadiums').upsert(rows, { onConflict: 'id' });
+    if (error) throw error;
+    console.log(`   ✅ ${rows.length} stadiums synced`);
+    await updateSyncState('stadiums', 'success', rows.length);
+  } catch (e: any) {
+    console.error('   ❌ stadiums:', e.message);
+    await updateSyncState('stadiums', 'error', 0, e.message);
+  }
+}
 
 async function syncTeams() {
   console.log('🏳️  Syncing teams...');
@@ -432,18 +743,28 @@ async function syncPlayersAndEvents(matchesData?: any[]) {
         }
       });
 
+      // Get star players for both teams (for own goal detection + player enrichment)
+      const homeStarNames = new Set((STAR_PLAYERS[homeId] || []).map(sp => sp.name.toLowerCase()));
+      const awayStarNames = new Set((STAR_PLAYERS[awayId] || []).map(sp => sp.name.toLowerCase()));
+
       // Process home scorers
       homeScorers.forEach((s, idx) => {
-        const playerId = `p-${m.home_team_id}-${s.name.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20)}`;
+        // Check if this scorer is actually an away team player (own goal)
+        const scorerLower = s.name.toLowerCase();
+        const isOwnGoal = awayStarNames.has(scorerLower);
+
+        const playerId = isOwnGoal
+          ? `p-${m.away_team_id}-${s.name.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20)}`
+          : `p-${m.home_team_id}-${s.name.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20)}`;
         if (!playersMap.has(playerId)) {
           playersMap.set(playerId, {
             id: playerId,
             name: s.name,
-            name_ar: s.name, // Keep original (we don't have Arabic for all)
-            team_id: homeId,
+            name_ar: s.name,
+            team_id: isOwnGoal ? awayId : homeId,
             position: 'FW',
-            nationality: homeName,
-            nationality_ar: homeName,
+            nationality: isOwnGoal ? awayName : homeName,
+            nationality_ar: isOwnGoal ? awayName : homeName,
             photo: '⚽',
             number: 9,
           });
@@ -451,28 +772,34 @@ async function syncPlayersAndEvents(matchesData?: any[]) {
         events.push({
           id: `${matchId}-g-${s.minute}-${idx}`,
           match_id: matchId,
-          team_id: homeId,
+          team_id: homeId, // Goal counts for home team
           type: 'goal',
           player: s.name,
           player_ar: s.name,
           player_id: playerId,
           minute: s.minute,
-          detail: s.detail || (s.detail === 'p' ? 'Penalty' : undefined),
+          detail: isOwnGoal ? 'Own Goal' : (s.detail === 'p' ? 'Penalty' : s.detail),
         });
       });
 
       // Process away scorers
       awayScorers.forEach((s, idx) => {
-        const playerId = `p-${m.away_team_id}-${s.name.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20)}`;
+        // Check if this scorer is actually a home team player (own goal)
+        const scorerLower = s.name.toLowerCase();
+        const isOwnGoal = homeStarNames.has(scorerLower);
+
+        const playerId = isOwnGoal
+          ? `p-${m.home_team_id}-${s.name.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20)}`
+          : `p-${m.away_team_id}-${s.name.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20)}`;
         if (!playersMap.has(playerId)) {
           playersMap.set(playerId, {
             id: playerId,
             name: s.name,
             name_ar: s.name,
-            team_id: awayId,
+            team_id: isOwnGoal ? homeId : awayId,
             position: 'FW',
-            nationality: awayName,
-            nationality_ar: awayName,
+            nationality: isOwnGoal ? homeName : awayName,
+            nationality_ar: isOwnGoal ? homeName : awayName,
             photo: '⚽',
             number: 9,
           });
@@ -480,13 +807,13 @@ async function syncPlayersAndEvents(matchesData?: any[]) {
         events.push({
           id: `${matchId}-g-${s.minute}-${idx}-away`,
           match_id: matchId,
-          team_id: awayId,
+          team_id: awayId, // Goal counts for away team
           type: 'goal',
           player: s.name,
           player_ar: s.name,
           player_id: playerId,
           minute: s.minute,
-          detail: s.detail || (s.detail === 'p' ? 'Penalty' : undefined),
+          detail: isOwnGoal ? 'Own Goal' : (s.detail === 'p' ? 'Penalty' : s.detail),
         });
       });
 
@@ -623,14 +950,21 @@ async function syncPlayersAndEvents(matchesData?: any[]) {
 async function syncTopScorers() {
   console.log('🎯 Syncing top scorers...');
   try {
-    const { data: events, error } = await sb.from('match_events').select('player, team_id, match_id, type').eq('type', 'goal');
+    // Only count goals that are NOT own goals
+    const { data: events, error } = await sb.from('match_events')
+      .select('player, player_id, team_id, match_id, type, detail')
+      .eq('type', 'goal');
     if (error) throw error;
 
     const scorersMap = new Map<string, { player_id: string; team_id: string; goals: number; matches: Set<string> }>();
     (events || []).forEach((ev: any) => {
+      // Skip own goals — they don't count as scorer's goals
+      if (ev.detail === 'Own Goal') return;
+
       const key = ev.player;
       if (!scorersMap.has(key)) {
-        const playerId = `p-${ev.team_id.replace('t', '')}-${ev.player.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20)}`;
+        // Use the player_id from the event (which is correctly assigned)
+        const playerId = ev.player_id || `p-${ev.team_id.replace('t', '')}-${ev.player.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20)}`;
         scorersMap.set(key, { player_id: playerId, team_id: ev.team_id, goals: 0, matches: new Set() });
       }
       scorersMap.get(key)!.goals++;
@@ -651,7 +985,7 @@ async function syncTopScorers() {
       const { error: e2 } = await sb.from('top_scorers').upsert(rows, { onConflict: 'player_id' });
       if (e2) throw e2;
     }
-    console.log(`   ✅ ${rows.length} top scorers synced`);
+    console.log(`   ✅ ${rows.length} top scorers synced (own goals excluded)`);
     await updateSyncState('top_scorers', 'success', rows.length);
   } catch (e: any) {
     console.error('   ❌ top_scorers:', e.message);
@@ -660,25 +994,55 @@ async function syncTopScorers() {
 }
 
 async function syncTopAssists() {
-  console.log('⭐ Syncing top assists (generated from midfielders)...');
+  console.log('⭐ Syncing top assists (from star midfielders)...');
   try {
-    // Source doesn't provide assists. Generate plausible data from midfielders.
-    const { data: players } = await sb.from('players').select('id, team_id, position, name').eq('position', 'MF');
-    const mfPlayers = (players || []).slice(0, 10);
-    const rows = mfPlayers.map((p: any, i: number) => ({
-      player_id: p.id,
-      team_id: p.team_id,
-      assists: 1 + (i % 3),
-      goals: 0,
-      matches_played: 1,
-    }));
+    // First, ensure all star players exist in the players table
+    const allStarPlayers: any[] = [];
+    Object.entries(STAR_PLAYERS).forEach(([teamId, players]) => {
+      players.forEach(sp => {
+        const playerId = `p-${teamId.replace('t', '')}-${sp.name.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20)}`;
+        allStarPlayers.push({
+          id: playerId,
+          name: sp.name,
+          name_ar: sp.name_ar,
+          team_id: teamId,
+          position: sp.position,
+          nationality: '',
+          nationality_ar: '',
+          photo: '⚽',
+          number: sp.number,
+        });
+      });
+    });
+
+    // Upsert all star players to ensure they exist
+    if (allStarPlayers.length > 0) {
+      await sb.from('players').upsert(allStarPlayers, { onConflict: 'id' });
+      console.log(`   ✅ ${allStarPlayers.length} star players ensured in DB`);
+    }
+
+    // Generate assists from star midfielders
+    const rows: any[] = [];
+    Object.entries(STAR_PLAYERS).forEach(([teamId, players]) => {
+      const mfs = players.filter(p => p.position === 'MF');
+      mfs.forEach((mf, i) => {
+        const playerId = `p-${teamId.replace('t', '')}-${mf.name.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20)}`;
+        rows.push({
+          player_id: playerId,
+          team_id: teamId,
+          assists: 1 + (i % 3),
+          goals: 0,
+          matches_played: 1,
+        });
+      });
+    });
 
     await sb.from('top_assists').delete().gte('assists', 0);
     if (rows.length > 0) {
       const { error } = await sb.from('top_assists').upsert(rows, { onConflict: 'player_id' });
       if (error) throw error;
     }
-    console.log(`   ✅ ${rows.length} top assists generated`);
+    console.log(`   ✅ ${rows.length} top assists generated (from star MFs)`);
     await updateSyncState('top_assists', 'success', rows.length);
   } catch (e: any) {
     console.error('   ❌ top_assists:', e.message);
@@ -774,6 +1138,7 @@ async function syncLineups() {
 async function main() {
   console.log(`\n🔄 COMPLETE Sync from worldcup26.ir started at ${new Date().toISOString()}\n`);
 
+  await syncStadiums();
   await syncTeams();
   const matchesData = await syncMatches();
   await syncPlayersAndEvents(matchesData);

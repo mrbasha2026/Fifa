@@ -357,11 +357,31 @@ export async function getTopScorers(limit = 15): Promise<Array<TopScorerRow & { 
   try {
     const { data, error } = await sb.from('top_scorers').select('*').order('goals', { ascending: false }).limit(limit);
     if (error || !data || data.length === 0) return delay(buildResult(TOP_SCORERS), 200);
-    // Enrich with player + team (from cache to avoid N+1)
+
+    // Fetch player info from Supabase for each scorer
+    const playerIds = (data as TopScorerRow[]).map(r => r.player_id).filter(Boolean);
+    const teamIds = Array.from(new Set((data as TopScorerRow[]).map(r => r.team_id).filter(Boolean)));
+
+    let playersMap: Record<string, Player> = {};
+    let teamsMap: Record<string, Team> = {};
+
+    if (playerIds.length > 0) {
+      const { data: playersData } = await sb.from('players').select('*').in('id', playerIds);
+      if (playersData) {
+        (playersData as Player[]).forEach(p => { playersMap[p.id] = p; });
+      }
+    }
+    if (teamIds.length > 0) {
+      const { data: teamsData } = await sb.from('teams').select('*').in('id', teamIds);
+      if (teamsData) {
+        (teamsData as any[]).forEach(t => { teamsMap[t.id] = mapTeam(t); });
+      }
+    }
+
     const enriched = (data as TopScorerRow[]).map(row => ({
       ...row,
-      player: PLAYER_BY_ID[row.player_id],
-      team: TEAM_BY_ID[row.team_id],
+      player: playersMap[row.player_id] || PLAYER_BY_ID[row.player_id],
+      team: teamsMap[row.team_id] || TEAM_BY_ID[row.team_id],
     }));
     return delay(enriched, 200);
   } catch {
@@ -386,10 +406,31 @@ export async function getTopAssists(limit = 15): Promise<Array<TopAssistRow & { 
   try {
     const { data, error } = await sb.from('top_assists').select('*').order('assists', { ascending: false }).limit(limit);
     if (error || !data || data.length === 0) return delay(buildResult(TOP_ASSISTS), 200);
+
+    // Fetch player + team info from Supabase
+    const playerIds = (data as TopAssistRow[]).map(r => r.player_id).filter(Boolean);
+    const teamIds = Array.from(new Set((data as TopAssistRow[]).map(r => r.team_id).filter(Boolean)));
+
+    let playersMap: Record<string, Player> = {};
+    let teamsMap: Record<string, Team> = {};
+
+    if (playerIds.length > 0) {
+      const { data: playersData } = await sb.from('players').select('*').in('id', playerIds);
+      if (playersData) {
+        (playersData as Player[]).forEach(p => { playersMap[p.id] = p; });
+      }
+    }
+    if (teamIds.length > 0) {
+      const { data: teamsData } = await sb.from('teams').select('*').in('id', teamIds);
+      if (teamsData) {
+        (teamsData as any[]).forEach(t => { teamsMap[t.id] = mapTeam(t); });
+      }
+    }
+
     const enriched = (data as TopAssistRow[]).map(row => ({
       ...row,
-      player: PLAYER_BY_ID[row.player_id],
-      team: TEAM_BY_ID[row.team_id],
+      player: playersMap[row.player_id] || PLAYER_BY_ID[row.player_id],
+      team: teamsMap[row.team_id] || TEAM_BY_ID[row.team_id],
     }));
     return delay(enriched, 200);
   } catch {
