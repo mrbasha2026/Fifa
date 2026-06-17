@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useNavStore, useThemeStore } from '@/lib/stores/wc-stores';
-import { getTeamById, getPlayersByTeam, getMatchesByTeam } from '@/lib/wc/supabase-client';
-import { STANDINGS, TEAM_BY_ID } from '@/lib/wc/data';
+import { getTeamById, getPlayersByTeam, getMatchesByTeam, getStandingsByGroup } from '@/lib/wc/supabase-client';
+import { TEAM_BY_ID } from '@/lib/wc/data';
 import { t } from '@/lib/wc/i18n';
-import type { Team, Player, Match } from '@/lib/wc/types';
+import type { Team, Player, Match, StandingsRow } from '@/lib/wc/types';
 import { TeamLogo, LocalizedTeamName, MatchCard } from '@/components/wc/MatchCard';
 import { PageTitle } from '@/components/wc/SectionHeader';
 import { FavoriteButton } from '@/components/wc/FavoriteButton';
@@ -18,6 +18,8 @@ export function TeamDetailsPage({ teamId }: { teamId: string }) {
   const [team, setTeam] = useState<Team | null>(null);
   const [players, setPlayers] = useState<Player[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
+  const [standingsRow, setStandingsRow] = useState<StandingsRow | null>(null);
+  const [groupStandings, setGroupStandings] = useState<StandingsRow[]>([]);
   const [tab, setTab] = useState<'squad' | 'matches' | 'stats'>('squad');
 
   useEffect(() => {
@@ -25,10 +27,17 @@ export function TeamDetailsPage({ teamId }: { teamId: string }) {
       getTeamById(teamId),
       getPlayersByTeam(teamId),
       getMatchesByTeam(teamId),
-    ]).then(([t, p, m]) => {
+    ]).then(async ([t, p, m]) => {
       setTeam(t);
       setPlayers(p);
       setMatches(m);
+      // Fetch standings from Supabase
+      if (t?.group) {
+        const standings = await getStandingsByGroup(t.group);
+        setGroupStandings(standings);
+        const row = standings.find(s => s.team_id === teamId);
+        setStandingsRow(row ?? null);
+      }
     });
   }, [teamId]);
 
@@ -37,11 +46,8 @@ export function TeamDetailsPage({ teamId }: { teamId: string }) {
   }
 
   const Back = dir === 'rtl' ? ArrowRight : ArrowLeft;
-  const standingsRow = STANDINGS.find(s => s.team_id === teamId);
   const positionInGroup = standingsRow
-    ? STANDINGS.filter(s => s.group === standingsRow.group)
-        .sort((a, b) => b.points - a.points || b.goal_diff - a.goal_diff)
-        .findIndex(s => s.team_id === teamId) + 1
+    ? groupStandings.findIndex(s => s.team_id === teamId) + 1
     : 0;
   const qualified = positionInGroup > 0 && positionInGroup <= 2;
 

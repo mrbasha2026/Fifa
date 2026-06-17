@@ -33,6 +33,27 @@ export default function Home() {
     root.setAttribute('lang', dir === 'rtl' ? 'ar' : 'en');
   }, [theme, dir]);
 
+  // Auto-sync every 60 seconds (background, non-blocking)
+  // Triggers server-side sync from worldcup26.ir → Supabase
+  useEffect(() => {
+    const SYNC_INTERVAL = 60_000; // 60 seconds
+    const triggerSync = async () => {
+      try {
+        await fetch('/api/sync', { method: 'POST' });
+      } catch {
+        // Silent fail — sync is best-effort
+      }
+    };
+    // Initial sync after 5 seconds (let page load first)
+    const initialTimer = setTimeout(triggerSync, 5000);
+    // Periodic sync
+    const interval = setInterval(triggerSync, SYNC_INTERVAL);
+    return () => {
+      clearTimeout(initialTimer);
+      clearInterval(interval);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       <DataStatusBanner />

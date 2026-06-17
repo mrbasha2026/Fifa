@@ -153,10 +153,148 @@ export async function POST(req: NextRequest) {
     results.standings = { ok: false, error: e.message };
   }
 
+  // ===== Sync players + events (goals) from finished matches =====
+  try {
+    const allMatches: any[] = await apiGet('/get/games');
+    const finished = allMatches.filter(m => m.finished === 'TRUE' || m.finished === true);
+
+    function parseScorersAPI(s: string) {
+      if (!s || s === 'null') return [];
+      const result: any[] = [];
+      const regex = /"([^"']+?)\s+(\d+(?:'\+)?\+?\d*)'(?:\s*\(([^)]+)\))?"/g;
+      let match;
+      while ((match = regex.exec(s)) !== null) {
+        const [, name, minuteStr, detail] = match;
+        const cleanMinute = minuteStr.replace(/'/g, '');
+        let minute;
+        if (cleanMinute.includes('+')) {
+          const parts = cleanMinute.split('+').map(Number);
+          minute = parts[0] + (parts[1] || 0);
+        } else {
+          minute = parseInt(cleanMinute);
+        }
+        result.push({ name: name.trim(), minute, detail: detail ? detail.trim() : undefined });
+      }
+      return result;
+    }
+
+    const playersMap = new Map<string, any>();
+    const events: any[] = [];
+
+    finished.forEach(m => {
+      const matchId = `m${m.id}`;
+      const homeScorers = parseScorersAPI(m.home_scorers);
+      const awayScorers = parseScorersAPI(m.away_scorers);
+
+      homeScorers.forEach((s: any, idx: number) => {
+        const playerId = `p-${m.home_team_id}-${s.name.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20)}`;
+        if (!playersMap.has(playerId)) {
+          playersMap.set(playerId, {
+            id: playerId,
+            name: s.name,
+            name_ar: s.name,
+            team_id: `t${m.home_team_id}`,
+            position: 'FW',
+            nationality: m.home_team_name_en || '',
+            nationality_ar: m.home_team_name_en || '',
+            photo: '⚽',
+            number: 9,
+          });
+        }
+        events.push({
+          id: `${matchId}-g-${s.minute}-${idx}`,
+          match_id: matchId,
+          team_id: `t${m.home_team_id}`,
+          type: 'goal',
+          player: s.name,
+          player_ar: s.name,
+          player_id: playerId,
+          minute: s.minute,
+          detail: s.detail || (s.detail === 'p' ? 'Penalty' : undefined),
+        });
+      });
+
+      awayScorers.forEach((s: any, idx: number) => {
+        const playerId = `p-${m.away_team_id}-${s.name.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20)}`;
+        if (!playersMap.has(playerId)) {
+          playersMap.set(playerId, {
+            id: playerId,
+            name: s.name,
+            name_ar: s.name,
+            team_id: `t${m.away_team_id}`,
+            position: 'FW',
+            nationality: m.away_team_name_en || '',
+            nationality_ar: m.away_team_name_en || '',
+            photo: '⚽',
+            number: 9,
+          });
+        }
+        events.push({
+          id: `${matchId}-g-${s.minute}-${idx}-away`,
+          match_id: matchId,
+          team_id: `t${m.away_team_id}`,
+          type: 'goal',
+          player: s.name,
+          player_ar: s.name,
+          player_id: playerId,
+          minute: s.minute,
+          detail: s.detail || (s.detail === 'p' ? 'Penalty' : undefined),
+        });
+      });
+    });
+
+    // Upsert players
+    const players = Array.from(playersMap.values());
+    if (players.length > 0) {
+      await sb.from('players').upsert(players, { onConflict: 'id' });
+    }
+
+    // Clear and upsert events
+    await sb.from('match_events').delete().neq('id', '___never___');
+    const BATCH = 100;
+    let eventsOk = 0;
+    for (let i = 0; i < events.length; i += BATCH) {
+      const batch = events.slice(i, i + BATCH);
+      const { error } = await sb.from('match_events').upsert(batch, { onConflict: 'id' });
+      if (!error) eventsOk += batch.length;
+    }
+
+    // Aggregate top scorers
+    const scorersMap = new Map<string, { player_id: string; team_id: string; goals: number; matches: Set<string> }>();
+    events.forEach(ev => {
+      if (!scorersMap.has(ev.player)) {
+        scorersMap.set(ev.player, { player_id: ev.player_id, team_id: ev.team_id, goals: 0, matches: new Set() });
+      }
+      scorersMap.get(ev.player)!.goals++;
+      scorersMap.get(ev.player)!.matches.add(ev.match_id);
+    });
+    const scorers = Array.from(scorersMap.values()).map(s => ({
+      player_id: s.player_id,
+      team_id: s.team_id,
+      goals: s.goals,
+      assists: 0,
+      penalties: 0,
+      matches_played: s.matches.size,
+    }));
+    await sb.from('top_scorers').delete().gte('goals', 0);
+    if (scorers.length > 0) {
+      await sb.from('top_scorers').upsert(scorers, { onConflict: 'player_id' });
+    }
+
+    results.players = { ok: true, count: players.length };
+    results.events = { ok: true, count: eventsOk };
+    results.top_scorers = { ok: true, count: scorers.length };
+  } catch (e: any) {
+    results.events = { ok: false, error: e.message };
+  }
+
   // Update sync_state
   await sb.from('sync_state').upsert([
     { id: 'matches', last_synced_at: new Date().toISOString(), last_status: results.matches.ok ? 'success' : 'error', rows_affected: results.matches.count || 0, last_error: results.matches.error || null },
     { id: 'standings', last_synced_at: new Date().toISOString(), last_status: results.standings.ok ? 'success' : 'error', rows_affected: results.standings.count || 0, last_error: results.standings.error || null },
+    { id: 'players', last_synced_at: new Date().toISOString(), last_status: results.players?.ok ? 'success' : 'error', rows_affected: results.players?.count || 0 },
+    { id: 'events', last_synced_at: new Date().toISOString(), last_status: results.events?.ok ? 'success' : 'error', rows_affected: results.events?.count || 0 },
+    { id: 'top_scorers', last_synced_at: new Date().toISOString(), last_status: results.top_scorers?.ok ? 'success' : 'error', rows_affected: results.top_scorers?.count || 0 },
   ], { onConflict: 'id' });
 
   return NextResponse.json({

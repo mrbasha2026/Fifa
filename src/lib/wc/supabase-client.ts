@@ -446,25 +446,61 @@ export async function getMatchStatistics(matchId: string): Promise<MatchStatisti
 }
 
 export async function getMatchLineups(matchId: string): Promise<MatchLineup[]> {
+  // Try fetching from Supabase first
+  const sb = getSupabase();
+  if (sb) {
+    try {
+      const { data, error } = await sb.from('match_lineups').select('*').eq('match_id', matchId);
+      if (!error && data && data.length > 0) {
+        return data as MatchLineup[];
+      }
+    } catch {}
+  }
+
+  // Fallback: generate locally from players data
   const m = MATCH_BY_ID[matchId];
   if (!m) return delay([], 200);
-  const lineups: MatchLineup[] = [];
-  if (m.home_team_id && TEAM_BY_ID[m.home_team_id]) {
-    lineups.push(buildLineupLocal(matchId, m.home_team_id, '4-3-3'));
+
+  // Fetch match from Supabase if not in local cache
+  let match = m;
+  if (!match.home_team_id && sb) {
+    try {
+      const { data } = await sb.from('matches').select('*').eq('id', matchId).single();
+      if (data) match = mapMatch(data);
+    } catch {}
   }
-  if (m.away_team_id && TEAM_BY_ID[m.away_team_id]) {
-    lineups.push(buildLineupLocal(matchId, m.away_team_id, '4-2-3-1'));
+
+  const lineups: MatchLineup[] = [];
+  if (match.home_team_id) {
+    lineups.push(await buildLineupFromDB(matchId, match.home_team_id, '4-3-3'));
+  }
+  if (match.away_team_id) {
+    lineups.push(await buildLineupFromDB(matchId, match.away_team_id, '4-2-3-1'));
   }
   return delay(lineups, 200);
 }
 
-function buildLineupLocal(matchId: string, teamId: string, formation: string): MatchLineup {
-  const players = PLAYERS.filter(p => p.team_id === teamId);
-  const team = TEAM_BY_ID[teamId];
-  const starters = players.slice(0, 11).map(p => ({
+async function buildLineupFromDB(matchId: string, teamId: string, formation: string): Promise<MatchLineup> {
+  // Fetch players for this team from Supabase
+  const sb = getSupabase();
+  let players: Player[] = PLAYERS.filter(p => p.team_id === teamId);
+  let team = TEAM_BY_ID[teamId];
+
+  if (sb) {
+    try {
+      const { data: playersData } = await sb.from('players').select('*').eq('team_id', teamId);
+      if (playersData && playersData.length > 0) {
+        players = playersData as Player[];
+      }
+      const { data: teamData } = await sb.from('teams').select('*').eq('id', teamId).single();
+      if (teamData) team = mapTeam(teamData);
+    } catch {}
+  }
+
+  const starters = players.slice(0, Math.min(11, players.length)).map(p => ({
     player_id: p.id, name: p.name, name_ar: p.name_ar, number: p.number, position: p.position,
   }));
-  const substitutes = players.slice(11).map(p => ({
+  const substitutes = players.slice(11, 11 + 7).map(p => ({
     player_id: p.id, name: p.name, name_ar: p.name_ar, number: p.number, position: p.position,
   }));
   return {
