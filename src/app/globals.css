@@ -1,0 +1,281 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+
+  /* World Cup brand colors */
+  --color-wc-red: #C8102E;
+  --color-wc-blue: #0B1F3B;
+  --color-wc-gold: #F5C542;
+  --color-wc-dark: #0B0F19;
+  --color-wc-card: #111827;
+  --color-wc-border: #1F2937;
+  --color-wc-line: #374151;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+/* ===== DARK MODE (default for WC app) ===== */
+:root {
+  --radius: 0.75rem;
+  --background: #0B0F19;
+  --foreground: #F9FAFB;
+  --card: #111827;
+  --card-foreground: #F9FAFB;
+  --popover: #111827;
+  --popover-foreground: #F9FAFB;
+  --primary: #C8102E;
+  --primary-foreground: #FFFFFF;
+  --secondary: #1F2937;
+  --secondary-foreground: #F9FAFB;
+  --muted: #1F2937;
+  --muted-foreground: #9CA3AF;
+  --accent: #0B1F3B;
+  --accent-foreground: #F5C542;
+  --destructive: #EF4444;
+  --border: #1F2937;
+  --input: #1F2937;
+  --ring: #C8102E;
+  --chart-1: #C8102E;
+  --chart-2: #F5C542;
+  --chart-3: #0B1F3B;
+  --chart-4: #10B981;
+  --chart-5: #6366F1;
+  --sidebar: #0B0F19;
+  --sidebar-foreground: #F9FAFB;
+  --sidebar-primary: #C8102E;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #1F2937;
+  --sidebar-accent-foreground: #F5C542;
+  --sidebar-border: #1F2937;
+  --sidebar-ring: #C8102E;
+}
+
+/* ===== LIGHT MODE ===== */
+.dark\:root:has(.light),
+:root:has(.light) {
+  --background: #FFFFFF;
+  --foreground: #0B1F3B;
+  --card: #F9FAFB;
+  --card-foreground: #0B1F3B;
+  --popover: #FFFFFF;
+  --popover-foreground: #0B1F3B;
+  --primary: #C8102E;
+  --primary-foreground: #FFFFFF;
+  --secondary: #E5E7EB;
+  --secondary-foreground: #0B1F3B;
+  --muted: #E5E7EB;
+  --muted-foreground: #6B7280;
+  --accent: #FEF3C7;
+  --accent-foreground: #0B1F3B;
+  --destructive: #DC2626;
+  --border: #E5E7EB;
+  --input: #E5E7EB;
+  --ring: #C8102E;
+}
+
+/* Override dark mode for our app — by default app is dark WC theme */
+html:not(.light) {
+  --background: #0B0F19;
+  --foreground: #F9FAFB;
+  --card: #111827;
+  --card-foreground: #F9FAFB;
+  --popover: #111827;
+  --popover-foreground: #F9FAFB;
+  --primary: #C8102E;
+  --primary-foreground: #FFFFFF;
+  --secondary: #1F2937;
+  --secondary-foreground: #F9FAFB;
+  --muted: #1F2937;
+  --muted-foreground: #9CA3AF;
+  --accent: #0B1F3B;
+  --accent-foreground: #F5C542;
+  --border: #1F2937;
+  --input: #1F2937;
+  --ring: #C8102E;
+}
+
+html.light {
+  --background: #FFFFFF;
+  --foreground: #0B1F3B;
+  --card: #F9FAFB;
+  --card-foreground: #0B1F3B;
+  --popover: #FFFFFF;
+  --popover-foreground: #0B1F3B;
+  --primary: #C8102E;
+  --primary-foreground: #FFFFFF;
+  --secondary: #E5E7EB;
+  --secondary-foreground: #0B1F3B;
+  --muted: #E5E7EB;
+  --muted-foreground: #6B7280;
+  --accent: #FEF3C7;
+  --accent-foreground: #0B1F3B;
+  --border: #E5E7EB;
+  --input: #E5E7EB;
+  --ring: #C8102E;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    background-image:
+      radial-gradient(circle at 0% 0%, rgba(200, 16, 46, 0.08) 0%, transparent 35%),
+      radial-gradient(circle at 100% 0%, rgba(245, 197, 66, 0.06) 0%, transparent 35%),
+      radial-gradient(circle at 50% 100%, rgba(11, 31, 59, 0.12) 0%, transparent 50%);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+  html.light body {
+    background-image:
+      radial-gradient(circle at 0% 0%, rgba(200, 16, 46, 0.04) 0%, transparent 35%),
+      radial-gradient(circle at 100% 0%, rgba(245, 197, 66, 0.04) 0%, transparent 35%);
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #374151; border-radius: 6px; }
+  ::-webkit-scrollbar-thumb:hover { background: #C8102E; }
+  html.light ::-webkit-scrollbar-thumb { background: #D1D5DB; }
+}
+
+/* ===== World Cup utility classes ===== */
+@layer utilities {
+  /* Glass card */
+  .glass-card {
+    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  html.light .glass-card {
+    background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(249,250,251,0.85) 100%);
+    border: 1px solid rgba(11,31,59,0.08);
+    box-shadow: 0 4px 20px rgba(11,31,59,0.06);
+  }
+
+  /* Gold winner glow */
+  .gold-glow {
+    box-shadow:
+      0 0 0 1px #F5C542,
+      0 0 24px rgba(245, 197, 66, 0.35),
+      0 0 48px rgba(245, 197, 66, 0.18);
+  }
+
+  /* Red live pulse */
+  .live-pulse {
+    position: relative;
+  }
+  .live-pulse::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    box-shadow: 0 0 0 0 rgba(200, 16, 46, 0.6);
+    animation: livePulse 1.6s ease-out infinite;
+    pointer-events: none;
+  }
+  @keyframes livePulse {
+    0% { box-shadow: 0 0 0 0 rgba(200, 16, 46, 0.6); }
+    70% { box-shadow: 0 0 0 14px rgba(200, 16, 46, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(200, 16, 46, 0); }
+  }
+
+  /* Pulsing dot for LIVE indicator */
+  .pulse-dot {
+    animation: pulseDot 1.4s ease-in-out infinite;
+  }
+  @keyframes pulseDot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.15); }
+  }
+
+  /* Fade-in / slide-up */
+  .animate-slide-up {
+    animation: slideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease both;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Champion shimmer */
+  .shimmer-gold {
+    background: linear-gradient(110deg, #F5C542 0%, #FFF7CC 30%, #F5C542 60%, #FFE066 100%);
+    background-size: 200% 100%;
+    animation: shimmer 3s linear infinite;
+  }
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* Bezier connector for knockout tree */
+  .bracket-connector {
+    stroke: #374151;
+    stroke-width: 2;
+    fill: none;
+  }
+  html.light .bracket-connector {
+    stroke: #D1D5DB;
+  }
+  .bracket-connector-active {
+    stroke: #F5C542;
+    stroke-width: 3;
+    filter: drop-shadow(0 0 6px rgba(245, 197, 66, 0.5));
+  }
+
+  /* RTL helpers */
+  [dir="rtl"] .rtl-flip {
+    transform: scaleX(-1);
+  }
+}
