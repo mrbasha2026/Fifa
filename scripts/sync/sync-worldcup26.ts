@@ -1,31 +1,47 @@
 /**
- * POST /api/sync
- * Triggers sync from worldcup26.ir (open-source, free) → Supabase.
- * No API key required.
+ * ============================================================
+ * World Cup 2026 — Sync from open-source API (worldcup26.ir)
+ * ============================================================
+ * Fetches live updates from the open-source WC 2026 API at
+ * https://worldcup26.ir (no API key required, free).
  *
- * Intended to be called by Vercel Cron / external scheduler.
+ * Updates Supabase with:
+ * - Match scores/status (when matches finish)
+ * - Group standings
+ *
+ * Run manually:
+ *   bun run scripts/sync/sync-worldcup26.ts
+ *
+ * Or via API route: POST /api/sync/worldcup26
+ * ============================================================
  */
 
-import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { config } from 'dotenv';
 import { resolve } from 'path';
 
-if (process.env.NODE_ENV !== 'production') {
-  config({ path: resolve(process.cwd(), '.env.local') });
-}
+config({ path: resolve(process.cwd(), '.env.local'), override: true });
 
-export const maxDuration = 60;
-export const dynamic = 'force-dynamic';
-
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const API_BASE = 'https://worldcup26.ir';
 
+if (!SUPABASE_URL || !SERVICE_KEY) {
+  console.error('❌ Missing Supabase env vars');
+  process.exit(1);
+}
+
+const sb = createClient(SUPABASE_URL, SERVICE_KEY, {
+  auth: { persistSession: false, autoRefreshToken: false },
+});
+
 async function apiGet(endpoint: string) {
-  const res = await fetch(`${API_BASE}${endpoint}`, {
-    headers: { 'Accept': 'application/json' },
-  });
-  if (!res.ok) throw new Error(`API ${res.status}`);
+  const url = `${API_BASE}${endpoint}`;
+  const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+  if (!res.ok) throw new Error(`API ${res.status}: ${await res.text()}`);
   const json = await res.json();
+  // API returns { games: [...] }, { teams: [...] }, { groups: [...] }, etc.
+  // Find the array in the response
   if (Array.isArray(json)) return json;
   for (const key of ['games', 'teams', 'groups', 'stadiums', 'data', 'response']) {
     if (Array.isArray(json[key])) return json[key];
@@ -38,9 +54,11 @@ function mapStatus(timeElapsed: string, finished: string | boolean): string {
   if (timeElapsed && !['notstarted', 'finished', ''].includes(timeElapsed)) return 'LIVE';
   return 'NS';
 }
+
 function mapType(type: string): string {
   return ({ group: 'group', r32: 'R32', r16: 'R16', qf: 'QF', sf: 'SF', final: 'FINAL', third: 'THIRD' } as any)[type] || 'group';
 }
+
 function localDateToISO(localDate: string): string {
   if (!localDate) return new Date().toISOString();
   const [datePart, timePart] = localDate.split(' ');
@@ -49,45 +67,39 @@ function localDateToISO(localDate: string): string {
   return new Date(Date.UTC(year, month - 1, day, hour, minute, 0)).toISOString();
 }
 
-export async function POST(req: NextRequest) {
-  // Optional auth check (for Vercel Cron protection)
-  const syncKey = process.env.SYNC_API_KEY;
-  if (syncKey) {
-    const providedKey = req.headers.get('x-sync-key') || req.nextUrl.searchParams.get('key');
-    if (providedKey !== syncKey) {
-      return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
-    }
-  }
+async function updateSyncState(id: string, status: 'success' | 'error', rows: number, error?: string) {
+  await sb.from('sync_state').upsert({
+    id,
+    last_synced_at: new Date().toISOString(),
+    last_status: status,
+    last_error: error ?? null,
+    rows_affected: rows,
+  }, { onConflict: 'id' });
+}
 
-  const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!SUPABASE_URL || !SERVICE_KEY) {
-    return NextResponse.json({ error: 'server not configured' }, { status: 500 });
-  }
-
-  const sb = createClient(SUPABASE_URL, SERVICE_KEY, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-
-  const startedAt = Date.now();
-  const results: Record<string, any> = {};
-
-  // ===== Sync matches =====
+async function syncMatches() {
+  console.log('⚽ Syncing matches from worldcup26.ir...');
   try {
     const matches: any[] = await apiGet('/get/games');
+    console.log(`   Fetched ${matches.length} matches`);
+
     const rows = matches.map((m: any) => {
       const round = mapType(m.type);
       const homeId = m.home_team_id && m.home_team_id !== '0' ? `t${m.home_team_id}` : '';
       const awayId = m.away_team_id && m.away_team_id !== '0' ? `t${m.away_team_id}` : '';
-      const homeScore = (m.finished === 'TRUE' || m.finished === true) ? parseInt(m.home_score || '0') : null;
-      const awayScore = (m.finished === 'TRUE' || m.finished === true) ? parseInt(m.away_score || '0') : null;
+      const homeScore = m.finished === 'TRUE' || m.finished === true ? parseInt(m.home_score || '0') : null;
+      const awayScore = m.finished === 'TRUE' || m.finished === true ? parseInt(m.away_score || '0') : null;
       const status = mapStatus(m.time_elapsed, m.finished);
       const stageOrder = ({ group: 1, R32: 2, R16: 3, QF: 4, SF: 5, FINAL: 6, THIRD: 6 } as any)[round] || 1;
+
+      // Determine winner
       let winnerId: string | null = null;
       if (homeScore !== null && awayScore !== null) {
         if (homeScore > awayScore) winnerId = homeId;
         else if (awayScore > homeScore) winnerId = awayId;
       }
+
+      // Determine bracket_position
       let bracketPosition: number | null = null;
       if (round !== 'group') {
         const matchNum = parseInt(m.id);
@@ -97,6 +109,7 @@ export async function POST(req: NextRequest) {
         else if (round === 'SF') bracketPosition = matchNum - 100;
         else if (round === 'FINAL' || round === 'THIRD') bracketPosition = 1;
       }
+
       return {
         id: `m${m.id}`,
         fixture_id: String(m.id),
@@ -115,20 +128,30 @@ export async function POST(req: NextRequest) {
         bracket_position: bracketPosition ?? undefined,
       };
     });
+
     const { error } = await sb.from('matches').upsert(rows, { onConflict: 'id' });
     if (error) throw error;
+    await updateSyncState('matches', 'success', rows.length);
+    console.log(`   ✅ ${rows.length} matches synced`);
+
+    // Count by status
     const byStatus = rows.reduce((acc: any, r: any) => {
       acc[r.status] = (acc[r.status] || 0) + 1;
       return acc;
     }, {});
-    results.matches = { ok: true, count: rows.length, byStatus };
+    console.log('   Status breakdown:', JSON.stringify(byStatus));
   } catch (e: any) {
-    results.matches = { ok: false, error: e.message };
+    console.error('   ❌ matches:', e.message);
+    await updateSyncState('matches', 'error', 0, e.message);
   }
+}
 
-  // ===== Sync standings =====
+async function syncStandings() {
+  console.log('📊 Syncing standings...');
   try {
     const groups: any[] = await apiGet('/get/groups');
+    console.log(`   Fetched ${groups.length} groups`);
+
     const rows: any[] = [];
     groups.forEach((g: any) => {
       (g.teams || []).forEach((team: any) => {
@@ -146,30 +169,25 @@ export async function POST(req: NextRequest) {
         });
       });
     });
+
     const { error } = await sb.from('standings').upsert(rows, { onConflict: 'id' });
     if (error) throw error;
-    results.standings = { ok: true, count: rows.length };
+    await updateSyncState('standings', 'success', rows.length);
+    console.log(`   ✅ ${rows.length} standings rows synced`);
   } catch (e: any) {
-    results.standings = { ok: false, error: e.message };
+    console.error('   ❌ standings:', e.message);
+    await updateSyncState('standings', 'error', 0, e.message);
   }
-
-  // Update sync_state
-  await sb.from('sync_state').upsert([
-    { id: 'matches', last_synced_at: new Date().toISOString(), last_status: results.matches.ok ? 'success' : 'error', rows_affected: results.matches.count || 0, last_error: results.matches.error || null },
-    { id: 'standings', last_synced_at: new Date().toISOString(), last_status: results.standings.ok ? 'success' : 'error', rows_affected: results.standings.count || 0, last_error: results.standings.error || null },
-  ], { onConflict: 'id' });
-
-  return NextResponse.json({
-    ok: true,
-    source: 'worldcup26.ir',
-    duration_ms: Date.now() - startedAt,
-    results,
-  });
 }
 
-export async function GET() {
-  return NextResponse.json({
-    ok: true,
-    message: 'Use POST to trigger sync from worldcup26.ir (free, no key required)',
-  });
+async function main() {
+  console.log(`\n🔄 Sync from worldcup26.ir started at ${new Date().toISOString()}\n`);
+  await syncMatches();
+  await syncStandings();
+  console.log(`\n✅ Sync complete at ${new Date().toISOString()}\n`);
 }
+
+main().catch(err => {
+  console.error('\n💥 Fatal:', err);
+  process.exit(1);
+});

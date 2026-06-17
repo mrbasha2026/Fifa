@@ -12,7 +12,7 @@
     "db:migrate": "prisma migrate dev",
     "db:reset": "prisma migrate reset",
     "supabase:seed": "bun run scripts/sync/seed-supabase.ts",
-    "sync": "bun run scripts/sync/api-football-sync.ts",
+    "sync": "bun run scripts/sync/sync-worldcup26.ts",
     "sync:api": "curl -X POST http://localhost:3000/api/sync"
   },
   "dependencies": {

@@ -62,3 +62,4 @@ server.log
 
 # Download folder (screenshots, generated files)
 /download/upload/
+tool-results/
