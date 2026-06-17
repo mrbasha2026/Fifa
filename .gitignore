@@ -61,4 +61,4 @@ server.log
 /tmp/venv/
 
 # Download folder (screenshots, generated files)
-/download/
+/download/upload/

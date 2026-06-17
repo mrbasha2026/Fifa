@@ -474,7 +474,7 @@ export const GROUP_MATCHES: Match[] = [
     events: [
       goalEvent('g2', 'fra', 'p-mbappe', 'Kylian Mbappé', 'كيليان مبابي', 8),
       goalEvent('g2', 'fra', 'p-griezmann', 'Antoine Griezmann', 'أنطوان غريزمان', 28),
-      goalEvent('g2', 'kor', 'Son Heung-min', 'سون هيونغ مين', 55),
+      goalEvent('g2', 'kor', 'p-son', 'Son Heung-min', 'سون هيونغ مين', 55),
       goalEvent('g2', 'fra', 'p-mbappe', 'Kylian Mbappé', 'كيليان مبابي', 71, 'Penalty'),
       goalEvent('g2', 'fra', 'p-mbappe', 'Kylian Mbappé', 'كيليان مبابي', 88),
     ],
@@ -511,7 +511,7 @@ export const GROUP_MATCHES: Match[] = [
     events: [
       goalEvent('g5', 'eng', 'p-bellingham', 'Jude Bellingham', 'جود بيلينغهام', 19),
       goalEvent('g5', 'eng', 'p-kane', 'Harry Kane', 'هاري كين', 42, 'Penalty'),
-      goalEvent('g5', 'irn', 'Mehdi Taremi', 'مهدي طارمي', 61),
+      goalEvent('g5', 'irn', 'p-taremi', 'Mehdi Taremi', 'مهدي طارمي', 61),
       goalEvent('g5', 'eng', 'p-saka', 'Bukayo Saka', 'بوكايو ساكا', 80),
     ],
     statistics: defaultStats(3, 1), man_of_the_match: 'p-bellingham',
@@ -523,7 +523,7 @@ export const GROUP_MATCHES: Match[] = [
     referee: 'Jesús Gil Manzano', winner_id: 'por', loser_id: 'par',
     events: [
       goalEvent('g6', 'por', 'p-ronaldo', 'Cristiano Ronaldo', 'كريستيانو رونالدو', 27, 'Penalty'),
-      goalEvent('g6', 'par', 'Antonio Sanabria', 'أنطونيو سانابريا', 53),
+      goalEvent('g6', 'par', 'p-sanabria', 'Antonio Sanabria', 'أنطونيو سانابريا', 53),
       goalEvent('g6', 'por', 'p-leao', 'Rafael Leão', 'رافائيل لياو', 88),
     ],
     statistics: defaultStats(2, 1), man_of_the_match: 'p-ronaldo',
@@ -535,7 +535,7 @@ export const GROUP_MATCHES: Match[] = [
     referee: 'Sandro Wagner', winner_id: null, loser_id: null,
     events: [
       goalEvent('g7', 'sau', 'p-salem', 'Salem Al-Dawsari', 'سالم الدوسري', 38, 'Penalty'),
-      goalEvent('g7', 'per', 'Gianluca Lapadula', 'جيانلوكا لابادولا', 72),
+      goalEvent('g7', 'per', 'p-lapadula', 'Gianluca Lapadula', 'جيانلوكا لابادولا', 72),
     ],
     statistics: defaultStats(1, 1),
   },
@@ -559,7 +559,7 @@ export const GROUP_MATCHES: Match[] = [
     events: [
       goalEvent('g9', 'ger', 'p-musiala', 'Jamal Musiala', 'جمال موسيالا', 11),
       goalEvent('g9', 'ger', 'p-wirtz', 'Florian Wirtz', 'فلوريان فيرتز', 28),
-      goalEvent('g9', 'aus', 'Jackson Irvine', 'جاكسون إيرفين', 49),
+      goalEvent('g9', 'aus', 'p-irvine', 'Jackson Irvine', 'جاكسون إيرفين', 49),
       goalEvent('g9', 'ger', 'p-musiala', 'Jamal Musiala', 'جمال موسيالا', 67),
       goalEvent('g9', 'ger', 'p-kimmich', 'Joshua Kimmich', 'جوشوا كيميتش', 83),
     ],
@@ -612,7 +612,7 @@ export const GROUP_MATCHES: Match[] = [
     events: [
       goalEvent('g11', 'usa', 'p-pulisic', 'Christian Pulisic', 'كريستيان بوليسيتش', 23),
       goalEvent('g11', 'mex', 'p-jimenez', 'Santiago Giménez', 'سانتياغو خيمينيز', 56),
-      cardEvent('g11', 'usa', 'p-mckennie', 'Weston McKennie', 'ويستون ماكيني', 41, 'Yellow'),
+      cardEvent('g11', 'usa', 'Weston McKennie', 'ويستون ماكيني', 41, 'Yellow'),
     ],
     statistics: defaultStats(1, 1),
   },
@@ -703,7 +703,7 @@ export const R32_MATCHES: Match[] = [
     referee: 'Anthony Taylor', winner_id: 'ned', loser_id: 'per', next_match_id: 'r16-1', bracket_position: 2,
     events: [
       goalEvent('r32-2', 'ned', 'p-gakpo', 'Cody Gakpo', 'كودي خاكبو', 17),
-      goalEvent('r32-2', 'per', 'Gianluca Lapadula', 'جيانلوكا لابادولا', 33),
+      goalEvent('r32-2', 'per', 'p-lapadula', 'Gianluca Lapadula', 'جيانلوكا لابادولا', 33),
       goalEvent('r32-2', 'ned', 'p-deprijn', 'Memphis Depay', 'ممفيس ديباي', 56),
       goalEvent('r32-2', 'ned', 'p-simons', 'Xavi Simons', 'تشافي سيمونز', 78),
     ],
@@ -716,7 +716,7 @@ export const R32_MATCHES: Match[] = [
     events: [
       goalEvent('r32-3', 'fra', 'p-mbappe', 'Kylian Mbappé', 'كيليان مبابي', 11),
       goalEvent('r32-3', 'fra', 'p-griezmann', 'Antoine Griezmann', 'أنطوان غريزمان', 34),
-      goalEvent('r32-3', 'gha', 'Mohammed Kudus', 'محمد كودوس', 62),
+      goalEvent('r32-3', 'gha', 'p-kudus', 'Mohammed Kudus', 'محمد كودوس', 62),
       goalEvent('r32-3', 'fra', 'p-mbappe', 'Kylian Mbappé', 'كيليان مبابي', 79),
     ],
     statistics: defaultStats(3, 1), man_of_the_match: 'p-mbappe',
@@ -746,7 +746,7 @@ export const R32_MATCHES: Match[] = [
     round: 'R32', stage_order: 2, stadium_id: 'levis',
     referee: 'Jesús Gil Manzano', winner_id: 'ita', loser_id: 'civ', next_match_id: 'r16-3', bracket_position: 6,
     events: [
-      goalEvent('r32-6', 'civ', 'Sébastien Haller', 'سيباستيان هالر', 28),
+      goalEvent('r32-6', 'civ', 'p-haller', 'Sébastien Haller', 'سيباستيان هالر', 28),
       goalEvent('r32-6', 'ita', 'p-chiesa', 'Federico Chiesa', 'فيديريكو كييزا', 53),
       goalEvent('r32-6', 'ita', 'p-barella', 'Nicolò Barella', 'نيكولو باريللا', 88),
     ],
@@ -768,8 +768,8 @@ export const R32_MATCHES: Match[] = [
     round: 'R32', stage_order: 2, stadium_id: 'lincoln',
     referee: 'Slavko Vinčić', winner_id: 'uru', loser_id: 'hon', next_match_id: 'r16-4', bracket_position: 8,
     events: [
-      goalEvent('r32-8', 'uru', 'Facundo Pellistri', 'فاكوندو بيليستري', 34),
-      goalEvent('r32-8', 'uru', 'Darwin Núñez', 'داروين نونيز', 71),
+      goalEvent('r32-8', 'uru', 'p-pellistri', 'Facundo Pellistri', 'فاكوندو بيليستري', 34),
+      goalEvent('r32-8', 'uru', 'p-nunez', 'Darwin Núñez', 'داروين نونيز', 71),
     ],
     statistics: defaultStats(0, 2), man_of_the_match: 'p-kramaric',
   },
@@ -792,7 +792,7 @@ export const R32_MATCHES: Match[] = [
     referee: 'Anthony Taylor', winner_id: 'ger', loser_id: 'sen', next_match_id: 'r16-5', bracket_position: 10,
     events: [
       goalEvent('r32-10', 'ger', 'p-musiala', 'Jamal Musiala', 'جمال موسيالا', 19),
-      goalEvent('r32-10', 'sen', 'Sadio Mané', 'ساديو ماني', 53, 'Penalty'),
+      goalEvent('r32-10', 'sen', 'p-mane', 'Sadio Mané', 'ساديو ماني', 53, 'Penalty'),
       goalEvent('r32-10', 'ger', 'p-wirtz', 'Florian Wirtz', 'فلوريان فيرتز', 84),
     ],
     statistics: defaultStats(1, 2), man_of_the_match: 'p-musiala',
@@ -814,7 +814,7 @@ export const R32_MATCHES: Match[] = [
     events: [
       goalEvent('r32-12', 'nor', 'p-haaland', 'Erling Haaland', 'إيرلينغ هالاند', 14),
       goalEvent('r32-12', 'nor', 'p-haaland', 'Erling Haaland', 'إيرلينغ هالاند', 49),
-      goalEvent('r32-12', 'sui', 'Breel Embolo', 'بريل إمبولو', 67),
+      goalEvent('r32-12', 'sui', 'p-embolo', 'Breel Embolo', 'بريل إمبولو', 67),
       goalEvent('r32-12', 'nor', 'p-odegaard', 'Martin Ødegaard', 'مارتن أوديغارد', 82),
     ],
     statistics: defaultStats(3, 1), man_of_the_match: 'p-haaland',
@@ -857,7 +857,7 @@ export const R32_MATCHES: Match[] = [
     events: [
       goalEvent('r32-16', 'usa', 'p-pulisic', 'Christian Pulisic', 'كريستيان بوليسيتش', 28),
       goalEvent('r32-16', 'sau', 'p-salem', 'Salem Al-Dawsari', 'سالم الدوسري', 61),
-      cardEvent('r32-16', 'sau', 'p-ambri', 'Ali Al-Bulaihi', 'علي البليهي', 44, 'Yellow'),
+      cardEvent('r32-16', 'sau', 'Ali Al-Bulaihi', 'علي البليهي', 44, 'Yellow'),
     ],
     statistics: defaultStats(1, 1),
   },
