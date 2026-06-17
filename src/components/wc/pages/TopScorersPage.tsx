@@ -202,10 +202,10 @@ export function TopAssistsPage() {
                         onClick={() => team && go('team-details', { id: team.id })}
                         className="flex items-center gap-2 text-start"
                       >
-                        <span className="text-xl">{row.player?.photo}</span>
+                        <span className="text-xl">{row.player?.photo || '⚽'}</span>
                         <div>
                           <div className="font-bold text-xs group-hover:text-[#F5C542] transition-colors">
-                            {lang === 'ar' ? row.player?.name_ar : row.player?.name}
+                            {lang === 'ar' ? (row.player?.name_ar || row.player?.name || '—') : (row.player?.name || row.player?.name_ar || '—')}
                           </div>
                           <div className="text-[10px] text-muted-foreground flex items-center gap-1">
                             {team && <img src={team.flag} alt={team.name} className="h-3.5 w-5 rounded-sm object-cover" loading="lazy" />}
