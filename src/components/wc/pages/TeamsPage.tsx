@@ -102,7 +102,9 @@ function TeamCard({ team, onClick }: { team: Team; onClick: () => void }) {
         <FavoriteButton kind="team" id={team.id} size="sm" />
       </div>
       <div className="flex items-center gap-3 mb-3">
-        <TeamLogo team={team} size="lg" />
+        <div className="h-14 w-14 rounded-full bg-card/60 border border-border/50 flex items-center justify-center overflow-hidden shrink-0">
+          <img src={team.flag} alt={team.name} className="w-full h-full object-cover" loading="lazy" />
+        </div>
         <div className="min-w-0">
           <div className="font-extrabold text-sm group-hover:text-[#F5C542] transition-colors truncate">
             <LocalizedTeamName team={team} />

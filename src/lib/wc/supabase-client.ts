@@ -25,6 +25,8 @@ import {
   PLAYER_BY_ID,
   MATCH_BY_ID,
   TEAMS_BY_GROUP,
+  STADIUMS,
+  STADIUM_BY_ID,
 } from './data';
 import type {
   Team, Player, Match, StandingsRow, MatchEvent, MatchLineup,
@@ -122,6 +124,7 @@ export const db = {
       case 'standings':   return new QueryBuilder<StandingsRow>(STANDINGS);
       case 'top_scorers': return new QueryBuilder<TopScorerRow>(TOP_SCORERS);
       case 'top_assists': return new QueryBuilder<TopAssistRow>(TOP_ASSISTS);
+      case 'stadiums':    return new QueryBuilder<any>(STADIUMS);
       case 'match_events': return new QueryBuilder<MatchEvent>(
         ALL_MATCHES.flatMap(m => m.events ?? [])
       );
@@ -133,6 +136,10 @@ export const db = {
 };
 
 // ===== Convenience helpers (analogous to RPC functions) =====
+
+export async function getStadiumById(id: string) {
+  return delay(STADIUM_BY_ID[id] ?? null, 100);
+}
 
 export async function getLiveMatches(): Promise<Match[]> {
   return delay(ALL_MATCHES.filter(m => m.status === 'LIVE'));

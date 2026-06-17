@@ -1,10 +1,11 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { TEAM_BY_ID } from '@/lib/wc/data';
+import { TEAM_BY_ID, STADIUM_BY_ID } from '@/lib/wc/data';
 import type { Match, Team } from '@/lib/wc/types';
 import { useNavStore, useFavoritesStore, useThemeStore } from '@/lib/stores/wc-stores';
 import { t } from '@/lib/wc/i18n';
+import { formatTime, formatDate, formatDateTime } from '@/lib/wc/time';
 import { Heart, MapPin } from 'lucide-react';
 
 export function TeamLogo({
@@ -31,17 +32,26 @@ export function TeamLogo({
     );
   }
   const sizeCls = {
-    xs: 'h-6 w-6 text-base',
-    sm: 'h-8 w-8 text-lg',
-    md: 'h-10 w-10 text-xl',
-    lg: 'h-14 w-14 text-2xl',
-    xl: 'h-20 w-20 text-4xl',
+    xs: 'h-6 w-6',
+    sm: 'h-8 w-8',
+    md: 'h-10 w-10',
+    lg: 'h-14 w-14',
+    xl: 'h-20 w-20',
   }[size];
 
   return (
     <div className="flex items-center gap-2">
       <div className={cn('rounded-full bg-card/60 border border-border/50 flex items-center justify-center shrink-0 overflow-hidden', sizeCls)}>
-        <span className="leading-none">{team.flag || team.logo}</span>
+        <img
+          src={team.flag}
+          alt={team.name}
+          className="w-full h-full object-cover"
+          loading="lazy"
+          onError={(e) => {
+            (e.target as HTMLImageElement).style.display = 'none';
+            (e.target as HTMLImageElement).parentElement!.textContent = team.fifa_code;
+          }}
+        />
       </div>
       {showName && (
         <div className="leading-tight">
@@ -91,10 +101,9 @@ export function StatusBadge({ match, small = false }: { match: Match; small?: bo
       break;
     case 'NS':
     default:
-      const d = new Date(match.date);
-      const time = d.toLocaleTimeString(lang === 'ar' ? 'ar-EG' : 'en-US', { hour: '2-digit', minute: '2-digit' });
-      const day = d.toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', { month: 'short', day: 'numeric' });
-      label = small ? time : `${day} · ${time}`;
+      const time = formatTime(match.date, lang);
+      const date = formatDate(match.date, lang);
+      label = small ? time : `${date} · ${time}`;
       cls = 'bg-secondary text-secondary-foreground border border-border';
       break;
   }
@@ -150,6 +159,7 @@ export function MatchCard({
   const roundLabel = (() => {
     if (match.round === 'group') return match.group ? `${t('group', lang)} ${match.group}` : t('groupStage', lang);
     const map: Record<string, { ar: string; en: string }> = {
+      R32: { ar: 'دور الـ32', en: 'R32' },
       R16: { ar: 'دور الـ16', en: 'R16' },
       QF: { ar: 'ربع النهائي', en: 'QF' },
       SF: { ar: 'نصف النهائي', en: 'SF' },
@@ -224,10 +234,16 @@ export function MatchCard({
       </div>
 
       {/* Footer info */}
-      {variant !== 'compact' && (match.stadium || match.city) && (
+      {variant !== 'compact' && match.stadium_id && (
         <div className="mt-3 pt-3 border-t border-border/40 flex items-center justify-center gap-1 text-[10px] text-muted-foreground">
           <MapPin className="h-3 w-3" />
-          <span className="truncate">{match.stadium}{match.city ? `, ${match.city}` : ''}</span>
+          <span className="truncate">
+            {(() => {
+              const s = STADIUM_BY_ID[match.stadium_id!];
+              if (!s) return '';
+              return `${lang === 'ar' ? s.name_ar : s.name}, ${lang === 'ar' ? s.city_ar : s.city}`;
+            })()}
+          </span>
         </div>
       )}
     </div>

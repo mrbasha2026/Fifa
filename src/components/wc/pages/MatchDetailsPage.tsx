@@ -3,15 +3,16 @@
 import { useEffect, useState } from 'react';
 import { useNavStore, useThemeStore } from '@/lib/stores/wc-stores';
 import { getMatchById, getMatchStatistics, getMatchLineups, getEventsByMatch } from '@/lib/wc/supabase-client';
-import { TEAM_BY_ID, PLAYER_BY_ID } from '@/lib/wc/data';
+import { TEAM_BY_ID, PLAYER_BY_ID, STADIUM_BY_ID } from '@/lib/wc/data';
 import { t } from '@/lib/wc/i18n';
+import { formatDateTime } from '@/lib/wc/time';
 import type { Match, MatchStatistics, MatchLineup, MatchEvent } from '@/lib/wc/types';
 import { TeamLogo, LocalizedTeamName, MatchScore, StatusBadge } from '@/components/wc/MatchCard';
 import { PageTitle } from '@/components/wc/SectionHeader';
 import { FavoriteButton } from '@/components/wc/FavoriteButton';
 import {
   ArrowLeft, ArrowRight, MapPin, User, Goal as GoalIcon,
-  Square, Repeat, Star, Activity, BarChart3, Users as UsersIcon,
+  Square, Repeat, Star, Activity, BarChart3, Users as UsersIcon, Clock,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -78,6 +79,7 @@ export function MatchDetailsPage({ matchId }: { matchId: string }) {
           <div className="flex items-center justify-between mb-6">
             <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
               {match.round === 'group' && match.group ? `${t('group', lang)} ${match.group}` :
+               match.round === 'R32' ? t('roundOf32', lang) :
                match.round === 'R16' ? t('round16', lang) :
                match.round === 'QF' ? t('quarterFinals', lang) :
                match.round === 'SF' ? t('semiFinals', lang) :
@@ -134,13 +136,13 @@ export function MatchDetailsPage({ matchId }: { matchId: string }) {
 
           {/* Match meta */}
           <div className="mt-6 pt-6 border-t border-border/40 grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-            <MetaItem icon={<MapPin className="h-3.5 w-3.5" />} label={t('stadium', lang)} value={match.stadium ?? '—'} />
-            <MetaItem icon={<MapPin className="h-3.5 w-3.5" />} label={t('city', lang)} value={match.city ?? '—'} />
+            <MetaItem icon={<MapPin className="h-3.5 w-3.5" />} label={t('stadium', lang)} value={match.stadium_id ? (lang === 'ar' ? STADIUM_BY_ID[match.stadium_id]?.name_ar : STADIUM_BY_ID[match.stadium_id]?.name) ?? '—' : '—'} />
+            <MetaItem icon={<MapPin className="h-3.5 w-3.5" />} label={t('city', lang)} value={match.stadium_id ? (lang === 'ar' ? STADIUM_BY_ID[match.stadium_id]?.city_ar : STADIUM_BY_ID[match.stadium_id]?.city) ?? '—' : '—'} />
             <MetaItem icon={<User className="h-3.5 w-3.5" />} label={t('referee', lang)} value={match.referee ?? '—'} />
             <MetaItem
-              icon={<Calendar className="h-3.5 w-3.5" />}
+              icon={<Clock className="h-3.5 w-3.5" />}
               label={t('kickoff', lang)}
-              value={new Date(match.date).toLocaleString(lang === 'ar' ? 'ar-EG' : 'en-US', { dateStyle: 'medium', timeStyle: 'short' })}
+              value={formatDateTime(match.date, lang)}
             />
           </div>
         </div>
@@ -412,7 +414,7 @@ function EventCard({
           {ev.type === 'substitution' && t('substitution', lang)}
         </div>
       </div>
-      {team && <span className="text-lg shrink-0">{team.flag}</span>}
+      {team && <img src={team.flag} alt={team.name} className="h-4 w-6 rounded-sm object-cover shrink-0" loading="lazy" />}
     </div>
   );
 }

@@ -45,6 +45,7 @@ export const STRINGS = {
   allStages: { ar: 'كل المراحل', en: 'All Stages' },
   allDates: { ar: 'كل التواريخ', en: 'All Dates' },
   groupStage: { ar: 'دور المجموعات', en: 'Group Stage' },
+  roundOf32: { ar: 'دور الـ32', en: 'Round of 32' },
   round16: { ar: 'دور الـ16', en: 'Round of 16' },
   quarterFinals: { ar: 'ربع النهائي', en: 'Quarter Finals' },
   semiFinals: { ar: 'نصف النهائي', en: 'Semi Finals' },
@@ -148,5 +149,10 @@ export const STRINGS = {
 export type StringKey = keyof typeof STRINGS;
 
 export function t(key: StringKey, lang: Lang): string {
-  return STRINGS[key][lang];
+  const entry = STRINGS[key];
+  if (!entry) {
+    // Graceful fallback — return the key instead of throwing
+    return key as string;
+  }
+  return entry[lang];
 }

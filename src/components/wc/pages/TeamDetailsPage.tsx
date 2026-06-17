@@ -58,9 +58,13 @@ export function TeamDetailsPage({ teamId }: { teamId: string }) {
       {/* Team hero */}
       <div className="relative overflow-hidden rounded-2xl border border-border/60 glass-card">
         <div className="absolute inset-0 bg-gradient-to-br from-[#0B1F3B]/30 via-transparent to-[#C8102E]/15" />
-        <div className="absolute -right-8 -top-8 text-[160px] opacity-10 select-none">{team.flag}</div>
+        <div className="absolute -right-8 -top-8 opacity-10 select-none">
+          {team.flag && <img src={team.flag} alt="" className="h-40 w-64 object-cover" />}
+        </div>
         <div className="relative p-6 md:p-8 flex flex-col md:flex-row items-center gap-6">
-          <TeamLogo team={team} size="xl" />
+          <div className="h-20 w-20 rounded-2xl bg-card/60 border border-border/50 flex items-center justify-center overflow-hidden shrink-0">
+            <img src={team.flag} alt={team.name} className="w-full h-full object-cover" loading="lazy" />
+          </div>
           <div className="flex-1 text-center md:text-start">
             <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
               <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">

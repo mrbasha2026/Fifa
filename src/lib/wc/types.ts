@@ -6,6 +6,7 @@
 export type MatchStatus = 'NS' | 'LIVE' | 'HT' | 'FT' | 'AET' | 'PEN';
 export type MatchRound =
   | 'group'
+  | 'R32'
   | 'R16'
   | 'QF'
   | 'SF'
@@ -19,8 +20,8 @@ export interface Team {
   id: string;
   name: string;
   name_ar: string;
-  logo: string; // emoji or url
-  flag: string; // emoji
+  logo: string; // URL to flag image (flagcdn.com)
+  flag: string; // URL to flag image (flagcdn.com)
   group: string; // A..L
   fifa_code: string; // KSA, BRA, etc.
   fifa_ranking?: number;
@@ -35,7 +36,7 @@ export interface Player {
   position: Position;
   nationality: string;
   nationality_ar: string;
-  photo: string; // emoji or url
+  photo: string; // emoji (player photo placeholder)
   number: number;
   age?: number;
   club?: string;
@@ -104,12 +105,11 @@ export interface Match {
   home_score: number | null;
   away_score: number | null;
   status: MatchStatus;
-  date: string; // ISO
+  date: string; // ISO (UTC)
   round: MatchRound;
   stage_order: number;
   group?: string;
-  stadium?: string;
-  city?: string;
+  stadium_id?: string; // links to Stadium.id
   referee?: string;
   minute?: number; // for LIVE matches
   // Knockout specific

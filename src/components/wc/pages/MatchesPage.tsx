@@ -2,8 +2,9 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { useThemeStore } from '@/lib/stores/wc-stores';
-import { ALL_MATCHES, TEAMS_BY_GROUP, TEAM_BY_ID } from '@/lib/wc/data';
+import { ALL_MATCHES, TEAMS_BY_GROUP, TEAM_BY_ID, STADIUM_BY_ID } from '@/lib/wc/data';
 import { t } from '@/lib/wc/i18n';
+import { getDateKey } from '@/lib/wc/time';
 import type { Match, MatchRound } from '@/lib/wc/types';
 import { MatchCard, MatchCardSkeleton } from '@/components/wc/MatchCard';
 import { PageTitle } from '@/components/wc/SectionHeader';
@@ -28,13 +29,12 @@ export function MatchesPage() {
     return () => window.clearTimeout(id);
   }, []);
 
-  // Build date list
+  // Build date list (based on user TZ)
   const dates = useMemo(() => {
     const set = new Set<string>();
     ALL_MATCHES.forEach(m => {
-      const d = new Date(m.date);
-      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-      set.add(key);
+      const key = getDateKey(m.date);
+      if (key) set.add(key);
     });
     return Array.from(set).sort();
   }, []);
@@ -45,18 +45,18 @@ export function MatchesPage() {
       if (group !== 'ALL' && m.group !== group) return false;
       if (status !== 'ALL' && m.status !== status) return false;
       if (date !== 'ALL') {
-        const d = new Date(m.date);
-        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        const key = getDateKey(m.date);
         if (key !== date) return false;
       }
       if (search) {
         const q = search.toLowerCase();
         const homeTeam = TEAM_BY_ID[m.home_team_id];
         const awayTeam = TEAM_BY_ID[m.away_team_id];
+        const stadium = m.stadium_id ? STADIUM_BY_ID[m.stadium_id] : null;
         const haystack = [
           homeTeam?.name, homeTeam?.name_ar,
           awayTeam?.name, awayTeam?.name_ar,
-          m.stadium, m.city,
+          stadium?.name, stadium?.name_ar, stadium?.city, stadium?.city_ar,
         ].filter(Boolean).join(' ').toLowerCase();
         if (!haystack.includes(q)) return false;
       }
@@ -67,6 +67,7 @@ export function MatchesPage() {
   const stages: Array<{ value: StageFilter; label: string }> = [
     { value: 'ALL', label: t('allStages', lang) },
     { value: 'group', label: t('groupStage', lang) },
+    { value: 'R32', label: t('roundOf32', lang) },
     { value: 'R16', label: t('round16', lang) },
     { value: 'QF', label: t('quarterFinals', lang) },
     { value: 'SF', label: t('semiFinals', lang) },
@@ -147,7 +148,7 @@ export function MatchesPage() {
               { value: 'ALL', label: t('allDates', lang) },
               ...dates.map(d => ({
                 value: d,
-                label: new Date(d + 'T12:00:00').toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
+                label: new Date(d + 'T12:00:00').toLocaleDateString(lang === 'ar' ? 'ar-SA' : 'en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
               })),
             ]}
           />

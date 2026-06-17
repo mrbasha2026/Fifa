@@ -151,7 +151,7 @@ function PlayerCardExtended({ player, onTeamClick }: { player: Player; onTeamCli
           onClick={(e) => { e.stopPropagation(); onTeamClick(); }}
           className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors mb-2"
         >
-          <span className="text-base">{team?.flag}</span>
+          {team && <img src={team.flag} alt={team.name} className="h-3.5 w-5 rounded-sm object-cover" loading="lazy" />}
           <LocalizedTeamNameLocalized team={team} />
         </button>
         <span className={cn('px-2 py-0.5 rounded text-[10px] font-bold', posColor)}>

@@ -117,7 +117,7 @@ export function TopScorersPage() {
                               {lang === 'ar' ? row.player?.name_ar : row.player?.name}
                             </div>
                             <div className="text-[10px] text-muted-foreground flex items-center gap-1">
-                              <span>{team?.flag}</span>
+                          <img src={team?.flag} alt={team?.name} className="h-3.5 w-5 rounded-sm object-cover" loading="lazy" />
                               <LocalizedTeamName team={team} />
                             </div>
                           </div>
@@ -208,7 +208,7 @@ export function TopAssistsPage() {
                             {lang === 'ar' ? row.player?.name_ar : row.player?.name}
                           </div>
                           <div className="text-[10px] text-muted-foreground flex items-center gap-1">
-                            <span>{team?.flag}</span>
+                            {team && <img src={team.flag} alt={team.name} className="h-3.5 w-5 rounded-sm object-cover" loading="lazy" />}
                             <LocalizedTeamName team={team} />
                           </div>
                         </div>
