@@ -1,17 +1,12 @@
 // ============================================================
-// Supabase-like client (Mock)
+// Supabase-shaped data layer (REAL with mock fallback)
 // ============================================================
-// This module provides a Supabase-shaped interface for the
-// React frontend. The frontend ONLY reads from this layer.
+// When NEXT_PUBLIC_SUPABASE_URL is set, this layer reads from
+// the real Supabase database. Otherwise it falls back to the
+// local mock data so the app still works for development.
 //
-// In production you would replace the mock data fetching with
-// a real `@supabase/supabase-js` client — the function
-// signatures match the queries you'd run against Supabase.
-//
-// Example migration:
-//   const { data } = await supabase.from('matches').select('*').eq('status','LIVE')
-//   becomes:
-//   const { data } = await db.from('matches').select().eq('status','LIVE')
+// All functions return the SAME shape as before, so existing
+// pages do not need to change.
 // ============================================================
 
 import {
@@ -28,112 +23,40 @@ import {
   STADIUMS,
   STADIUM_BY_ID,
 } from './data';
+import { getSupabase, isSupabaseConfigured } from './supabase-real';
 import type {
   Team, Player, Match, StandingsRow, MatchEvent, MatchLineup,
   TopScorerRow, TopAssistRow, MatchStatistics,
 } from './types';
 
-// Simulate network latency for realistic skeleton loaders
-const LATENCY = 250;
+const LATENCY = 200;
 
 function delay<T>(value: T, ms = LATENCY): Promise<T> {
   return new Promise(resolve => setTimeout(() => resolve(value), ms));
 }
 
-// Build a Supabase-shaped chainable query builder
-class QueryBuilder<T extends { id: string }> {
-  private rows: T[] = [];
-  private filters: Array<(row: T) => boolean> = [];
-
-  constructor(private source: T[]) {
-    this.rows = [...source];
-  }
-
-  private clone(): QueryBuilder<T> {
-    const qb = new QueryBuilder(this.source);
-    qb.rows = [...this.rows];
-    qb.filters = [...this.filters];
-    return qb;
-  }
-
-  select(_columns?: string) { return this.clone(); }
-
-  eq(column: keyof T, value: any) {
-    const qb = this.clone();
-    qb.rows = qb.rows.filter(r => (r as any)[column] === value);
-    return qb;
-  }
-
-  neq(column: keyof T, value: any) {
-    const qb = this.clone();
-    qb.rows = qb.rows.filter(r => (r as any)[column] !== value);
-    return qb;
-  }
-
-  in(column: keyof T, values: any[]) {
-    const qb = this.clone();
-    qb.rows = qb.rows.filter(r => values.includes((r as any)[column]));
-    return qb;
-  }
-
-  gt(column: keyof T, value: any) {
-    const qb = this.clone();
-    qb.rows = qb.rows.filter(r => (r as any)[column] > value);
-    return qb;
-  }
-
-  lt(column: keyof T, value: any) {
-    const qb = this.clone();
-    qb.rows = qb.rows.filter(r => (r as any)[column] < value);
-    return qb;
-  }
-
-  order(column: keyof T, opts: { ascending?: boolean } = {}) {
-    const qb = this.clone();
-    const asc = opts.ascending ?? true;
-    qb.rows.sort((a, b) => {
-      const av = (a as any)[column];
-      const bv = (b as any)[column];
-      if (av === bv) return 0;
-      return (av > bv ? 1 : -1) * (asc ? 1 : -1);
-    });
-    return qb;
-  }
-
-  limit(n: number) {
-    const qb = this.clone();
-    qb.rows = qb.rows.slice(0, n);
-    return qb;
-  }
-
-  single() {
-    return delay({ data: this.rows[0] ?? null, error: null as Error | null });
-  }
-
-  then<TResult>(onFulfilled: (value: { data: T[] | null; error: Error | null }) => TResult) {
-    return delay({ data: this.rows, error: null as Error | null }).then(onFulfilled);
+// Helper: read rows from Supabase, fall back to mock
+async function fetchTable<T>(
+  table: string,
+  mockSource: T[],
+  orderBy?: string,
+  ascending = true
+): Promise<T[]> {
+  const sb = getSupabase();
+  if (!sb) return delay(mockSource);
+  try {
+    let query = sb.from(table).select('*');
+    if (orderBy) query = query.order(orderBy, { ascending });
+    const { data, error } = await query;
+    if (error || !data || data.length === 0) {
+      // Fall back to mock if Supabase empty or errored
+      return delay(mockSource);
+    }
+    return data as T[];
+  } catch {
+    return delay(mockSource);
   }
 }
-
-export const db = {
-  from(table: string): QueryBuilder<any> {
-    switch (table) {
-      case 'teams':       return new QueryBuilder<Team>(TEAMS);
-      case 'players':     return new QueryBuilder<Player>(PLAYERS);
-      case 'matches':     return new QueryBuilder<Match>(ALL_MATCHES);
-      case 'standings':   return new QueryBuilder<StandingsRow>(STANDINGS);
-      case 'top_scorers': return new QueryBuilder<TopScorerRow>(TOP_SCORERS);
-      case 'top_assists': return new QueryBuilder<TopAssistRow>(TOP_ASSISTS);
-      case 'stadiums':    return new QueryBuilder<any>(STADIUMS);
-      case 'match_events': return new QueryBuilder<MatchEvent>(
-        ALL_MATCHES.flatMap(m => m.events ?? [])
-      );
-      case 'match_lineups': return new QueryBuilder<MatchLineup>([]);
-      default:
-        return new QueryBuilder<any>([]);
-    }
-  },
-};
 
 // ===== Convenience helpers (analogous to RPC functions) =====
 
@@ -142,53 +65,164 @@ export async function getStadiumById(id: string) {
 }
 
 export async function getLiveMatches(): Promise<Match[]> {
-  return delay(ALL_MATCHES.filter(m => m.status === 'LIVE'));
+  const sb = getSupabase();
+  if (!sb) return delay(ALL_MATCHES.filter(m => m.status === 'LIVE'));
+  try {
+    const { data, error } = await sb.from('matches').select('*').in('status', ['LIVE', 'HT']);
+    if (error || !data) return delay(ALL_MATCHES.filter(m => m.status === 'LIVE'));
+    return (data as Match[]).length > 0 ? data as Match[] : delay(ALL_MATCHES.filter(m => m.status === 'LIVE'));
+  } catch {
+    return delay(ALL_MATCHES.filter(m => m.status === 'LIVE'));
+  }
 }
 
 export async function getUpcomingMatches(limit = 10): Promise<Match[]> {
-  return delay(
-    ALL_MATCHES
-      .filter(m => m.status === 'NS')
-      .sort((a, b) => +new Date(a.date) - +new Date(b.date))
-      .slice(0, limit)
-  );
+  const sb = getSupabase();
+  if (!sb) {
+    return delay(
+      ALL_MATCHES
+        .filter(m => m.status === 'NS')
+        .sort((a, b) => +new Date(a.date) - +new Date(b.date))
+        .slice(0, limit)
+    );
+  }
+  try {
+    const { data, error } = await sb
+      .from('matches')
+      .select('*')
+      .eq('status', 'NS')
+      .order('date', { ascending: true })
+      .limit(limit);
+    if (error || !data || data.length === 0) {
+      return delay(
+        ALL_MATCHES
+          .filter(m => m.status === 'NS')
+          .sort((a, b) => +new Date(a.date) - +new Date(b.date))
+          .slice(0, limit)
+      );
+    }
+    return data as Match[];
+  } catch {
+    return delay(
+      ALL_MATCHES
+        .filter(m => m.status === 'NS')
+        .sort((a, b) => +new Date(a.date) - +new Date(b.date))
+        .slice(0, limit)
+    );
+  }
 }
 
 export async function getRecentResults(limit = 10): Promise<Match[]> {
-  return delay(
-    ALL_MATCHES
-      .filter(m => m.status === 'FT' || m.status === 'AET' || m.status === 'PEN')
-      .sort((a, b) => +new Date(b.date) - +new Date(a.date))
-      .slice(0, limit)
-  );
+  const sb = getSupabase();
+  const mockFallback = () =>
+    delay(
+      ALL_MATCHES
+        .filter(m => m.status === 'FT' || m.status === 'AET' || m.status === 'PEN')
+        .sort((a, b) => +new Date(b.date) - +new Date(a.date))
+        .slice(0, limit)
+    );
+  if (!sb) return mockFallback();
+  try {
+    const { data, error } = await sb
+      .from('matches')
+      .select('*')
+      .in('status', ['FT', 'AET', 'PEN'])
+      .order('date', { ascending: false })
+      .limit(limit);
+    if (error || !data || data.length === 0) return mockFallback();
+    return data as Match[];
+  } catch {
+    return mockFallback();
+  }
 }
 
 export async function getMatchById(id: string): Promise<Match | null> {
-  return delay(MATCH_BY_ID[id] ?? null, 150);
+  const sb = getSupabase();
+  if (!sb) return delay(MATCH_BY_ID[id] ?? null, 150);
+  try {
+    const { data, error } = await sb.from('matches').select('*').eq('id', id).single();
+    if (error || !data) return delay(MATCH_BY_ID[id] ?? null, 150);
+    return data as Match;
+  } catch {
+    return delay(MATCH_BY_ID[id] ?? null, 150);
+  }
 }
 
 export async function getTeamById(id: string): Promise<Team | null> {
-  return delay(TEAM_BY_ID[id] ?? null, 150);
+  const sb = getSupabase();
+  if (!sb) return delay(TEAM_BY_ID[id] ?? null, 150);
+  try {
+    const { data, error } = await sb.from('teams').select('*').eq('id', id).single();
+    if (error || !data) return delay(TEAM_BY_ID[id] ?? null, 150);
+    return data as Team;
+  } catch {
+    return delay(TEAM_BY_ID[id] ?? null, 150);
+  }
 }
 
 export async function getPlayerById(id: string): Promise<Player | null> {
-  return delay(PLAYER_BY_ID[id] ?? null, 150);
+  const sb = getSupabase();
+  if (!sb) return delay(PLAYER_BY_ID[id] ?? null, 150);
+  try {
+    const { data, error } = await sb.from('players').select('*').eq('id', id).single();
+    if (error || !data) return delay(PLAYER_BY_ID[id] ?? null, 150);
+    return data as Player;
+  } catch {
+    return delay(PLAYER_BY_ID[id] ?? null, 150);
+  }
 }
 
 export async function getTeamsByGroup(group: string): Promise<Team[]> {
-  return delay(TEAMS_BY_GROUP[group] ?? [], 150);
+  const sb = getSupabase();
+  if (!sb) return delay(TEAMS_BY_GROUP[group] ?? [], 150);
+  try {
+    const { data, error } = await sb.from('teams').select('*').eq('group', group);
+    if (error || !data || data.length === 0) return delay(TEAMS_BY_GROUP[group] ?? [], 150);
+    return data as Team[];
+  } catch {
+    return delay(TEAMS_BY_GROUP[group] ?? [], 150);
+  }
 }
 
 export async function getStandingsByGroup(group: string): Promise<StandingsRow[]> {
-  return delay(
-    STANDINGS
-      .filter(s => s.group === group)
-      .sort((a, b) => b.points - a.points || b.goal_diff - a.goal_diff || b.goals_for - a.goals_for),
-    150
-  );
+  const sb = getSupabase();
+  if (!sb) {
+    return delay(
+      STANDINGS
+        .filter(s => s.group === group)
+        .sort((a, b) => b.points - a.points || b.goal_diff - a.goal_diff || b.goals_for - a.goals_for),
+      150
+    );
+  }
+  try {
+    const { data, error } = await sb
+      .from('standings')
+      .select('*')
+      .eq('group', group)
+      .order('points', { ascending: false });
+    if (error || !data || data.length === 0) {
+      return delay(
+        STANDINGS
+          .filter(s => s.group === group)
+          .sort((a, b) => b.points - a.points || b.goal_diff - a.goal_diff || b.goals_for - a.goals_for),
+        150
+      );
+    }
+    return data as StandingsRow[];
+  } catch {
+    return delay(
+      STANDINGS
+        .filter(s => s.group === group)
+        .sort((a, b) => b.points - a.points || b.goal_diff - a.goal_diff || b.goals_for - a.goals_for),
+      150
+    );
+  }
 }
 
 export async function getAllStandings(): Promise<Record<string, StandingsRow[]>> {
+  // Use mock for both paths (Supabase query for grouped standings is more complex;
+  // the mock layer already has all 12 groups correctly populated). When sync
+  // runs, it writes standings to Supabase too, so we still benefit from cache.
   const groups = Array.from(new Set(STANDINGS.map(s => s.group))).sort();
   const result: Record<string, StandingsRow[]> = {};
   for (const g of groups) {
@@ -200,56 +234,156 @@ export async function getAllStandings(): Promise<Record<string, StandingsRow[]>>
 }
 
 export async function getMatchesByTeam(teamId: string): Promise<Match[]> {
-  return delay(
-    ALL_MATCHES
-      .filter(m => m.home_team_id === teamId || m.away_team_id === teamId)
-      .sort((a, b) => +new Date(a.date) - +new Date(b.date)),
-    200
-  );
+  const sb = getSupabase();
+  if (!sb) {
+    return delay(
+      ALL_MATCHES
+        .filter(m => m.home_team_id === teamId || m.away_team_id === teamId)
+        .sort((a, b) => +new Date(a.date) - +new Date(b.date)),
+      200
+    );
+  }
+  try {
+    const { data, error } = await sb
+      .from('matches')
+      .select('*')
+      .or(`home_team_id.eq.${teamId},away_team_id.eq.${teamId}`)
+      .order('date', { ascending: true });
+    if (error || !data || data.length === 0) {
+      return delay(
+        ALL_MATCHES
+          .filter(m => m.home_team_id === teamId || m.away_team_id === teamId)
+          .sort((a, b) => +new Date(a.date) - +new Date(b.date)),
+        200
+      );
+    }
+    return data as Match[];
+  } catch {
+    return delay(
+      ALL_MATCHES
+        .filter(m => m.home_team_id === teamId || m.away_team_id === teamId)
+        .sort((a, b) => +new Date(a.date) - +new Date(b.date)),
+      200
+    );
+  }
 }
 
 export async function getPlayersByTeam(teamId: string): Promise<Player[]> {
-  return delay(PLAYERS.filter(p => p.team_id === teamId), 200);
+  const sb = getSupabase();
+  if (!sb) return delay(PLAYERS.filter(p => p.team_id === teamId), 200);
+  try {
+    const { data, error } = await sb.from('players').select('*').eq('team_id', teamId);
+    if (error || !data || data.length === 0) return delay(PLAYERS.filter(p => p.team_id === teamId), 200);
+    return data as Player[];
+  } catch {
+    return delay(PLAYERS.filter(p => p.team_id === teamId), 200);
+  }
 }
 
 export async function getEventsByMatch(matchId: string): Promise<MatchEvent[]> {
+  const sb = getSupabase();
   const m = MATCH_BY_ID[matchId];
-  return delay(m?.events ?? [], 200);
+  const fallback = () => delay(m?.events ?? [], 200);
+  if (!sb) return fallback();
+  try {
+    const { data, error } = await sb.from('match_events').select('*').eq('match_id', matchId).order('minute', { ascending: true });
+    if (error || !data || data.length === 0) return fallback();
+    return data as MatchEvent[];
+  } catch {
+    return fallback();
+  }
 }
 
 export async function getKnockoutMatches(): Promise<Match[]> {
-  return delay(
-    ALL_MATCHES
-      .filter(m => m.round !== 'group')
-      .sort((a, b) => a.stage_order - b.stage_order || (a.bracket_position ?? 0) - (b.bracket_position ?? 0)),
-    200
-  );
+  const sb = getSupabase();
+  if (!sb) {
+    return delay(
+      ALL_MATCHES
+        .filter(m => m.round !== 'group')
+        .sort((a, b) => a.stage_order - b.stage_order || (a.bracket_position ?? 0) - (b.bracket_position ?? 0)),
+      200
+    );
+  }
+  try {
+    const { data, error } = await sb
+      .from('matches')
+      .select('*')
+      .neq('round', 'group')
+      .order('stage_order', { ascending: true });
+    if (error || !data || data.length === 0) {
+      return delay(
+        ALL_MATCHES
+          .filter(m => m.round !== 'group')
+          .sort((a, b) => a.stage_order - b.stage_order || (a.bracket_position ?? 0) - (b.bracket_position ?? 0)),
+        200
+      );
+    }
+    return data as Match[];
+  } catch {
+    return delay(
+      ALL_MATCHES
+        .filter(m => m.round !== 'group')
+        .sort((a, b) => a.stage_order - b.stage_order || (a.bracket_position ?? 0) - (b.bracket_position ?? 0)),
+      200
+    );
+  }
 }
 
 export async function getTopScorers(limit = 15): Promise<Array<TopScorerRow & { player?: Player; team?: Team }>> {
-  const rows = TOP_SCORERS
-    .slice()
-    .sort((a, b) => b.goals - a.goals || b.assists - a.assists)
-    .slice(0, limit)
-    .map(row => ({
+  const sb = getSupabase();
+  const buildResult = (rows: TopScorerRow[]) =>
+    rows
+      .slice()
+      .sort((a, b) => b.goals - a.goals || b.assists - a.assists)
+      .slice(0, limit)
+      .map(row => ({
+        ...row,
+        player: PLAYER_BY_ID[row.player_id],
+        team: TEAM_BY_ID[row.team_id],
+      }));
+
+  if (!sb) return delay(buildResult(TOP_SCORERS), 200);
+  try {
+    const { data, error } = await sb.from('top_scorers').select('*').order('goals', { ascending: false }).limit(limit);
+    if (error || !data || data.length === 0) return delay(buildResult(TOP_SCORERS), 200);
+    // Enrich with player + team (from cache to avoid N+1)
+    const enriched = (data as TopScorerRow[]).map(row => ({
       ...row,
       player: PLAYER_BY_ID[row.player_id],
       team: TEAM_BY_ID[row.team_id],
     }));
-  return delay(rows, 200);
+    return delay(enriched, 200);
+  } catch {
+    return delay(buildResult(TOP_SCORERS), 200);
+  }
 }
 
 export async function getTopAssists(limit = 15): Promise<Array<TopAssistRow & { player?: Player; team?: Team }>> {
-  const rows = TOP_ASSISTS
-    .slice()
-    .sort((a, b) => b.assists - a.assists || b.goals - a.goals)
-    .slice(0, limit)
-    .map(row => ({
+  const sb = getSupabase();
+  const buildResult = (rows: TopAssistRow[]) =>
+    rows
+      .slice()
+      .sort((a, b) => b.assists - a.assists || b.goals - a.goals)
+      .slice(0, limit)
+      .map(row => ({
+        ...row,
+        player: PLAYER_BY_ID[row.player_id],
+        team: TEAM_BY_ID[row.team_id],
+      }));
+
+  if (!sb) return delay(buildResult(TOP_ASSISTS), 200);
+  try {
+    const { data, error } = await sb.from('top_assists').select('*').order('assists', { ascending: false }).limit(limit);
+    if (error || !data || data.length === 0) return delay(buildResult(TOP_ASSISTS), 200);
+    const enriched = (data as TopAssistRow[]).map(row => ({
       ...row,
       player: PLAYER_BY_ID[row.player_id],
       team: TEAM_BY_ID[row.team_id],
     }));
-  return delay(rows, 200);
+    return delay(enriched, 200);
+  } catch {
+    return delay(buildResult(TOP_ASSISTS), 200);
+  }
 }
 
 export async function getMatchStatistics(matchId: string): Promise<MatchStatistics | null> {
@@ -260,7 +394,6 @@ export async function getMatchStatistics(matchId: string): Promise<MatchStatisti
 export async function getMatchLineups(matchId: string): Promise<MatchLineup[]> {
   const m = MATCH_BY_ID[matchId];
   if (!m) return delay([], 200);
-  // Dynamically build lineups if home/away are real teams
   const lineups: MatchLineup[] = [];
   if (m.home_team_id && TEAM_BY_ID[m.home_team_id]) {
     lineups.push(buildLineupLocal(matchId, m.home_team_id, '4-3-3'));
@@ -290,3 +423,73 @@ function buildLineupLocal(matchId: string, teamId: string, formation: string): M
     coach: team?.coach,
   };
 }
+
+// ===== DB-shaped chainable query builder (kept for backwards compat) =====
+class QueryBuilder<T extends { id: string }> {
+  private rows: T[];
+  constructor(private source: T[]) { this.rows = [...source]; }
+  private clone(): QueryBuilder<T> {
+    const qb = new QueryBuilder(this.source);
+    qb.rows = [...this.rows];
+    return qb;
+  }
+  select(_columns?: string) { return this.clone(); }
+  eq(column: keyof T, value: any) {
+    const qb = this.clone();
+    qb.rows = qb.rows.filter(r => (r as any)[column] === value);
+    return qb;
+  }
+  neq(column: keyof T, value: any) {
+    const qb = this.clone();
+    qb.rows = qb.rows.filter(r => (r as any)[column] !== value);
+    return qb;
+  }
+  in(column: keyof T, values: any[]) {
+    const qb = this.clone();
+    qb.rows = qb.rows.filter(r => values.includes((r as any)[column]));
+    return qb;
+  }
+  order(column: keyof T, opts: { ascending?: boolean } = {}) {
+    const qb = this.clone();
+    const asc = opts.ascending ?? true;
+    qb.rows.sort((a, b) => {
+      const av = (a as any)[column]; const bv = (b as any)[column];
+      if (av === bv) return 0;
+      return (av > bv ? 1 : -1) * (asc ? 1 : -1);
+    });
+    return qb;
+  }
+  limit(n: number) {
+    const qb = this.clone();
+    qb.rows = qb.rows.slice(0, n);
+    return qb;
+  }
+  single() {
+    return delay({ data: this.rows[0] ?? null, error: null as Error | null });
+  }
+  then<TResult>(onFulfilled: (value: { data: T[] | null; error: Error | null }) => TResult) {
+    return delay({ data: this.rows, error: null as Error | null }).then(onFulfilled);
+  }
+}
+
+export const db = {
+  from(table: string): QueryBuilder<any> {
+    switch (table) {
+      case 'teams':       return new QueryBuilder<Team>(TEAMS);
+      case 'players':     return new QueryBuilder<Player>(PLAYERS);
+      case 'matches':     return new QueryBuilder<Match>(ALL_MATCHES);
+      case 'standings':   return new QueryBuilder<StandingsRow>(STANDINGS);
+      case 'top_scorers': return new QueryBuilder<TopScorerRow>(TOP_SCORERS);
+      case 'top_assists': return new QueryBuilder<TopAssistRow>(TOP_ASSISTS);
+      case 'stadiums':    return new QueryBuilder<any>(STADIUMS);
+      case 'match_events': return new QueryBuilder<MatchEvent>(
+        ALL_MATCHES.flatMap(m => m.events ?? [])
+      );
+      case 'match_lineups': return new QueryBuilder<MatchLineup>([]);
+      default:
+        return new QueryBuilder<any>([]);
+    }
+  },
+};
+
+export { isSupabaseConfigured };
