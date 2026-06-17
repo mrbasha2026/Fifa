@@ -205,7 +205,7 @@ export function TopAssistsPage() {
                         <span className="text-xl">{row.player?.photo || '⚽'}</span>
                         <div>
                           <div className="font-bold text-xs group-hover:text-[#F5C542] transition-colors">
-                            {lang === 'ar' ? (row.player?.name_ar || row.player?.name || '—') : (row.player?.name || row.player?.name_ar || '—')}
+                            {lang === 'ar' ? (row.player?.name_ar || (row as any).player_name_ar || '—') : (row.player?.name || (row as any).player_name || '—')}
                           </div>
                           <div className="text-[10px] text-muted-foreground flex items-center gap-1">
                             {team && <img src={team.flag} alt={team.name} className="h-3.5 w-5 rounded-sm object-cover" loading="lazy" />}

@@ -22,13 +22,22 @@ export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseKey);
 let _client: SupabaseClient | null = null;
 
 export function getSupabase(): SupabaseClient | null {
-  if (!isSupabaseConfigured) return null;
+  if (!isSupabaseConfigured) {
+    console.warn('[Supabase] Not configured — URL:', supabaseUrl, 'Key:', supabaseKey ? 'present' : 'missing');
+    return null;
+  }
   if (_client) return _client;
-  _client = createClient(supabaseUrl!, supabaseKey!, {
-    auth: { persistSession: false, autoRefreshToken: false },
-    realtime: { params: { eventsPerSecond: 2 } },
-  });
-  return _client;
+  try {
+    _client = createClient(supabaseUrl!, supabaseKey!, {
+      auth: { persistSession: false, autoRefreshToken: false },
+      realtime: { params: { eventsPerSecond: 2 } },
+    });
+    console.log('[Supabase] Client created successfully');
+    return _client;
+  } catch (e) {
+    console.error('[Supabase] Failed to create client:', e);
+    return null;
+  }
 }
 
 // Server-side admin client (service_role key — NEVER expose to browser)

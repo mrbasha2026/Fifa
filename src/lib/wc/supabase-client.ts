@@ -389,7 +389,7 @@ export async function getTopScorers(limit = 15): Promise<Array<TopScorerRow & { 
   }
 }
 
-export async function getTopAssists(limit = 15): Promise<Array<TopAssistRow & { player?: Player; team?: Team }>> {
+export async function getTopAssists(limit = 15): Promise<Array<TopAssistRow & { player?: Player; team?: Team; player_name?: string; player_name_ar?: string }>> {
   const sb = getSupabase();
   const buildResult = (rows: TopAssistRow[]) =>
     rows
@@ -411,13 +411,13 @@ export async function getTopAssists(limit = 15): Promise<Array<TopAssistRow & { 
     const playerIds = (data as TopAssistRow[]).map(r => r.player_id).filter(Boolean);
     const teamIds = Array.from(new Set((data as TopAssistRow[]).map(r => r.team_id).filter(Boolean)));
 
-    let playersMap: Record<string, Player> = {};
+    let playersMap: Record<string, any> = {};
     let teamsMap: Record<string, Team> = {};
 
     if (playerIds.length > 0) {
       const { data: playersData } = await sb.from('players').select('*').in('id', playerIds);
       if (playersData) {
-        (playersData as Player[]).forEach(p => { playersMap[p.id] = p; });
+        (playersData as any[]).forEach(p => { playersMap[p.id] = p; });
       }
     }
     if (teamIds.length > 0) {
@@ -427,11 +427,17 @@ export async function getTopAssists(limit = 15): Promise<Array<TopAssistRow & { 
       }
     }
 
-    const enriched = (data as TopAssistRow[]).map(row => ({
-      ...row,
-      player: playersMap[row.player_id] || PLAYER_BY_ID[row.player_id],
-      team: teamsMap[row.team_id] || TEAM_BY_ID[row.team_id],
-    }));
+    const enriched = (data as TopAssistRow[]).map(row => {
+      const player = playersMap[row.player_id] || PLAYER_BY_ID[row.player_id];
+      const team = teamsMap[row.team_id] || TEAM_BY_ID[row.team_id];
+      return {
+        ...row,
+        player,
+        team,
+        player_name: player?.name || '—',
+        player_name_ar: player?.name_ar || player?.name || '—',
+      };
+    });
     return delay(enriched, 200);
   } catch {
     return delay(buildResult(TOP_ASSISTS), 200);
