@@ -341,52 +341,100 @@ function LineupsView({ lineups }: { lineups: MatchLineup[] }) {
 }
 
 function EventsView({ events, home, away }: { events: MatchEvent[]; home: any; away: any }) {
-  const { lang, dir } = useThemeStore();
+  const { lang } = useThemeStore();
   if (events.length === 0) {
     return <div className="glass-card rounded-xl p-8 text-center text-muted-foreground text-sm">{t('noData', lang)}</div>;
   }
+
+  const sorted = [...events].sort((a, b) => a.minute - b.minute);
+
   return (
     <div className="glass-card rounded-xl p-4 md:p-6">
-      <div className="relative space-y-3">
-        {events.map((ev, i) => {
-          const team = TEAM_BY_ID[ev.team_id];
-          const isHome = ev.team_id === home?.id;
-          let icon = <GoalIcon className="h-3.5 w-3.5" />;
-          let iconBg = 'bg-[#10B981]/20 text-[#10B981]';
-          if (ev.type === 'card') {
-            icon = <Square className="h-3.5 w-3.5" />;
-            iconBg = ev.detail === 'Red' ? 'bg-[#C8102E]/20 text-[#C8102E]' : 'bg-[#F5C542]/20 text-[#F5C542]';
-          } else if (ev.type === 'substitution') {
-            icon = <Repeat className="h-3.5 w-3.5" />;
-            iconBg = 'bg-[#3B82F6]/20 text-[#3B82F6]';
-          }
+      {/* Team headers */}
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center mb-4 pb-3 border-b border-border/40">
+        <div className="flex items-center justify-center gap-2">
+          {home && <img src={home.flag} alt="" className="h-5 w-8 rounded-sm object-cover" />}
+          <span className="text-sm font-bold truncate max-w-[120px]">{lang === 'ar' ? home?.name_ar : home?.name}</span>
+        </div>
+        <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground px-3">
+          {t('events', lang)}
+        </div>
+        <div className="flex items-center justify-center gap-2">
+          <span className="text-sm font-bold truncate max-w-[120px]">{lang === 'ar' ? away?.name_ar : away?.name}</span>
+          {away && <img src={away.flag} alt="" className="h-5 w-8 rounded-sm object-cover" />}
+        </div>
+      </div>
 
-          return (
-            <div
-              key={ev.id}
-              className={cn(
-                'flex items-center gap-3',
-                isHome ? 'flex-row' : 'flex-row-reverse',
-                dir === 'rtl' && (isHome ? 'flex-row-reverse' : 'flex-row')
-              )}
-            >
-              <div className="flex-1 flex" style={{ justifyContent: isHome ? 'flex-end' : 'flex-start' }}>
-                {isHome && (
-                  <EventCard ev={ev} team={team} icon={icon} iconBg={iconBg} align="end" />
-                )}
+      {/* Timeline */}
+      <div className="relative">
+        {/* Center line */}
+        <div className="absolute top-0 bottom-0 start-1/2 -translate-x-1/2 w-px bg-border/60" />
+
+        <div className="space-y-3">
+          {sorted.map((ev) => {
+            const team = TEAM_BY_ID[ev.team_id];
+            const isHome = ev.team_id === home?.id;
+            let icon: React.ReactNode = <GoalIcon className="h-3.5 w-3.5" />;
+            let iconBg = 'bg-[#10B981]/20 text-[#10B981]';
+            let label = t('goal', lang);
+            if (ev.detail === 'Penalty') label = t('penalty', lang);
+            if (ev.detail === 'Own Goal') label = t('ownGoal', lang);
+
+            if (ev.type === 'card') {
+              icon = <Square className="h-3.5 w-3.5" />;
+              if (ev.detail === 'Red') {
+                iconBg = 'bg-[#BF0A30]/20 text-[#BF0A30]';
+                label = t('redCard', lang);
+              } else {
+                iconBg = 'bg-[#D4AF37]/20 text-[#D4AF37]';
+                label = t('yellowCard', lang);
+              }
+            } else if (ev.type === 'substitution') {
+              icon = <Repeat className="h-3.5 w-3.5" />;
+              iconBg = 'bg-[#3C3B6E]/20 text-[#3C3B6E]';
+              label = t('substitution', lang);
+            }
+
+            return (
+              <div key={ev.id} className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 relative">
+                {/* Home side (left) */}
+                <div className="flex justify-end">
+                  {isHome && (
+                    <div className="glass-card rounded-lg p-2.5 max-w-[280px] flex items-center gap-2.5">
+                      <div className="flex-1 min-w-0 text-end">
+                        <div className="text-xs font-bold truncate">{lang === 'ar' ? ev.player_ar : ev.player}</div>
+                        <div className="text-[10px] text-muted-foreground">{label}</div>
+                      </div>
+                      <div className={cn('h-7 w-7 rounded-full flex items-center justify-center shrink-0', iconBg)}>
+                        {icon}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Minute (center) */}
+                <div className="flex flex-col items-center z-10 bg-card px-1.5 py-0.5 rounded-md">
+                  <span className="text-xs font-black tabular-nums text-[#D4AF37]" dir="ltr">{ev.minute}'</span>
+                </div>
+
+                {/* Away side (right) */}
+                <div className="flex justify-start">
+                  {!isHome && (
+                    <div className="glass-card rounded-lg p-2.5 max-w-[280px] flex items-center gap-2.5">
+                      <div className={cn('h-7 w-7 rounded-full flex items-center justify-center shrink-0', iconBg)}>
+                        {icon}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs font-bold truncate">{lang === 'ar' ? ev.player_ar : ev.player}</div>
+                        <div className="text-[10px] text-muted-foreground">{label}</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="flex flex-col items-center shrink-0">
-                <div className="text-xs font-black tabular-nums text-muted-foreground">{ev.minute}'</div>
-                <div className="h-8 w-px bg-border" />
-              </div>
-              <div className="flex-1">
-                {!isHome && (
-                  <EventCard ev={ev} team={team} icon={icon} iconBg={iconBg} align="start" />
-                )}
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </div>
   );

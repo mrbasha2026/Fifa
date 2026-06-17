@@ -27,6 +27,7 @@ export const STRINGS = {
   topScorers: { ar: 'الهدافون', en: 'Top Scorers' },
   topAssists: { ar: 'صناع الأهداف', en: 'Top Assists' },
   favorites: { ar: 'المفضلة', en: 'Favorites' },
+  predictions: { ar: 'التوقعات', en: 'Predictions' },
 
   // Home sections
   liveMatches: { ar: 'المباريات المباشرة', en: 'Live Matches' },

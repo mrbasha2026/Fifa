@@ -11,6 +11,7 @@ import { t } from '@/lib/wc/i18n';
 import type { Match, StandingsRow } from '@/lib/wc/types';
 import { MatchCard, MatchCardSkeleton, TeamLogo, LocalizedTeamName } from '@/components/wc/MatchCard';
 import { SectionHeader } from '@/components/wc/SectionHeader';
+import { CountdownTimer } from '@/components/wc/CountdownTimer';
 import { ChevronLeft, ChevronRight, Trophy, Target, Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -39,6 +40,11 @@ export function HomePage() {
     <div className="space-y-8 animate-fade-in">
       {/* Hero */}
       <HeroBanner />
+
+      {/* Countdown to next match */}
+      {upcoming && upcoming.length > 0 && (
+        <CountdownTimer nextMatch={upcoming[0]} />
+      )}
 
       {/* Live matches */}
       <section>

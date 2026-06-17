@@ -153,7 +153,8 @@ export type PageKey =
   | 'players'
   | 'top-scorers'
   | 'top-assists'
-  | 'favorites';
+  | 'favorites'
+  | 'predictions';
 
 export interface NavState {
   page: PageKey;

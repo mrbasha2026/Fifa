@@ -6,7 +6,7 @@ import { t } from '@/lib/wc/i18n';
 import type { PageKey } from '@/lib/wc/types';
 import {
   Home, Trophy, Users, User, Star, Calendar, BarChart3, Target, GitBranch,
-  Sun, Moon, Languages, Menu, X, Heart
+  Sun, Moon, Languages, Menu, X, Heart, ClipboardList
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -26,6 +26,7 @@ const NAV_ITEMS: NavItem[] = [
   { key: 'players', icon: User, label: { ar: 'اللاعبون', en: 'Players' } },
   { key: 'top-scorers', icon: Target, label: { ar: 'الهدافون', en: 'Scorers' } },
   { key: 'top-assists', icon: Star, label: { ar: 'الصُنّاع', en: 'Assists' } },
+  { key: 'predictions', icon: ClipboardList, label: { ar: 'التوقعات', en: 'Predictions' } },
   { key: 'favorites', icon: Heart, label: { ar: 'المفضلة', en: 'Favorites' } },
 ];
 

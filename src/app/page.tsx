@@ -14,6 +14,7 @@ import { TeamDetailsPage } from '@/components/wc/pages/TeamDetailsPage';
 import { PlayersPage } from '@/components/wc/pages/PlayersPage';
 import { TopScorersPage, TopAssistsPage } from '@/components/wc/pages/TopScorersPage';
 import { FavoritesPage } from '@/components/wc/pages/FavoritesPage';
+import { PredictionsPage } from '@/components/wc/pages/PredictionsPage';
 
 export default function Home() {
   const { page, params } = useNavStore();
@@ -70,6 +71,7 @@ export default function Home() {
         {page === 'top-scorers' && <TopScorersPage />}
         {page === 'top-assists' && <TopAssistsPage />}
         {page === 'favorites' && <FavoritesPage />}
+        {page === 'predictions' && <PredictionsPage />}
       </main>
       <Footer />
     </div>

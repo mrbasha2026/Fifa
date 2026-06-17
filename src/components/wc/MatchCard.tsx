@@ -129,11 +129,10 @@ export function MatchScore({ match, large = false }: { match: Match; large?: boo
   if (!showScore) {
     return <span className={cn(sizeCls, 'text-muted-foreground/60')}>–</span>;
   }
+  // Force LTR to prevent score reversal in RTL mode
   return (
-    <span className={cn(sizeCls, 'tabular-nums')}>
-      {home_score}
-      <span className="text-muted-foreground/50 mx-1">:</span>
-      {away_score}
+    <span className={cn(sizeCls, 'tabular-nums')} dir="ltr">
+      {home_score}<span className="text-muted-foreground/50 mx-1">-</span>{away_score}
     </span>
   );
 }

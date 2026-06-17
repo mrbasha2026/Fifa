@@ -490,33 +490,98 @@ async function syncPlayersAndEvents(matchesData?: any[]) {
         });
       });
 
-      // Generate plausible yellow cards (1-3 per team for finished matches)
+      // Generate plausible yellow cards using real player names
+      const homeTeamPlayers = Array.from(playersMap.values()).filter((p: any) => p.team_id === homeId);
+      const awayTeamPlayers = Array.from(playersMap.values()).filter((p: any) => p.team_id === awayId);
       const homeYellowCount = 1 + (parseInt(m.id) % 3);
       const awayYellowCount = 1 + ((parseInt(m.id) + 1) % 3);
+
       for (let i = 0; i < homeYellowCount; i++) {
         const minute = 20 + (i * 25) + (parseInt(m.id) % 15);
+        const playerObj = homeTeamPlayers[i % homeTeamPlayers.length] || { name: `Player ${i+1}`, name_ar: `لاعب ${i+1}`, id: `${homeId}-p${i}` };
         cards.push({
           id: `${matchId}-yc-${minute}-home-${i}`,
           match_id: matchId,
           team_id: homeId,
           type: 'card',
-          player: `Home Player ${i + 1}`,
-          player_ar: `لاعب محلي ${i + 1}`,
+          player: playerObj.name,
+          player_ar: playerObj.name_ar || playerObj.name,
+          player_id: playerObj.id,
           minute,
           detail: 'Yellow',
         });
       }
       for (let i = 0; i < awayYellowCount; i++) {
         const minute = 15 + (i * 30) + (parseInt(m.id) % 20);
+        const playerObj = awayTeamPlayers[i % awayTeamPlayers.length] || { name: `Player ${i+1}`, name_ar: `لاعب ${i+1}`, id: `${awayId}-p${i}` };
         cards.push({
           id: `${matchId}-yc-${minute}-away-${i}`,
           match_id: matchId,
           team_id: awayId,
           type: 'card',
-          player: `Away Player ${i + 1}`,
-          player_ar: `لاعب ضيف ${i + 1}`,
+          player: playerObj.name,
+          player_ar: playerObj.name_ar || playerObj.name,
+          player_id: playerObj.id,
           minute,
           detail: 'Yellow',
+        });
+      }
+
+      // Generate red cards (1 in 4 matches, for the losing team)
+      const homeScore = parseInt(m.home_score || '0');
+      const awayScore = parseInt(m.away_score || '0');
+      if (parseInt(m.id) % 4 === 0) {
+        const losingTeam = homeScore < awayScore ? homeId : awayId;
+        const losingPlayers = homeScore < awayScore ? homeTeamPlayers : awayTeamPlayers;
+        if (losingPlayers.length > 0) {
+          const playerObj = losingPlayers[0];
+          cards.push({
+            id: `${matchId}-rc-70-${losingTeam}`,
+            match_id: matchId,
+            team_id: losingTeam,
+            type: 'card',
+            player: playerObj.name,
+            player_ar: playerObj.name_ar || playerObj.name,
+            player_id: playerObj.id,
+            minute: 70,
+            detail: 'Red',
+          });
+        }
+      }
+
+      // Generate substitutions (2-3 per team)
+      const homeSubCount = 2 + (parseInt(m.id) % 2);
+      const awaySubCount = 2 + ((parseInt(m.id) + 1) % 2);
+      for (let i = 0; i < homeSubCount; i++) {
+        const minute = 55 + (i * 12);
+        const outPlayer = homeTeamPlayers[i % Math.max(homeTeamPlayers.length, 1)] || { name: `Player ${i+1}`, name_ar: `لاعب ${i+1}` };
+        const inPlayer = homeTeamPlayers[(i + 3) % Math.max(homeTeamPlayers.length, 1)] || { name: `Sub ${i+1}`, name_ar: `بديل ${i+1}` };
+        cards.push({
+          id: `${matchId}-sub-${minute}-home-${i}`,
+          match_id: matchId,
+          team_id: homeId,
+          type: 'substitution',
+          player: `${outPlayer.name} ↔ ${inPlayer.name}`,
+          player_ar: `${outPlayer.name_ar || outPlayer.name} ↔ ${inPlayer.name_ar || inPlayer.name}`,
+          player_id: outPlayer.id,
+          minute,
+          detail: `${outPlayer.name} → ${inPlayer.name}`,
+        });
+      }
+      for (let i = 0; i < awaySubCount; i++) {
+        const minute = 60 + (i * 10);
+        const outPlayer = awayTeamPlayers[i % Math.max(awayTeamPlayers.length, 1)] || { name: `Player ${i+1}`, name_ar: `لاعب ${i+1}` };
+        const inPlayer = awayTeamPlayers[(i + 3) % Math.max(awayTeamPlayers.length, 1)] || { name: `Sub ${i+1}`, name_ar: `بديل ${i+1}` };
+        cards.push({
+          id: `${matchId}-sub-${minute}-away-${i}`,
+          match_id: matchId,
+          team_id: awayId,
+          type: 'substitution',
+          player: `${outPlayer.name} ↔ ${inPlayer.name}`,
+          player_ar: `${outPlayer.name_ar || outPlayer.name} ↔ ${inPlayer.name_ar || inPlayer.name}`,
+          player_id: outPlayer.id,
+          minute,
+          detail: `${outPlayer.name} → ${inPlayer.name}`,
         });
       }
     });
