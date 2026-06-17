@@ -254,16 +254,949 @@ export const STANDINGS: StandingsRow[] = [
   { id: "l-t48", group: "L", team_id: "t48", played: 0, win: 0, draw: 0, lose: 0, goals_for: 0, goals_against: 0, goal_diff: 0, points: 0 }
 ];
 
-// ===== Players (kept from previous mock — to be filled when squads announced) =====
-export const PLAYERS: Player[] = [];
+// ===== Players (extracted from scorers — 49 players) =====
+export const PLAYERS: Player[] = [
+  {
+    "id": "p-15-nestoryirankunda",
+    "name": "Nestory Irankunda",
+    "name_ar": "Nestory Irankunda",
+    "team_id": "t15",
+    "position": "FW",
+    "nationality": "Australia",
+    "nationality_ar": "Australia",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-15-cmetcalfe",
+    "name": "C. Metcalfe",
+    "name_ar": "C. Metcalfe",
+    "team_id": "t15",
+    "position": "FW",
+    "nationality": "Australia",
+    "nationality_ar": "Australia",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-7-bkhoukhi905",
+    "name": "B. Khoukhi 90'+5'",
+    "name_ar": "B. Khoukhi 90'+5'",
+    "team_id": "t7",
+    "position": "FW",
+    "nationality": "Qatar",
+    "nationality_ar": "Qatar",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-8-breelembolo",
+    "name": "Breel Embolo",
+    "name_ar": "Breel Embolo",
+    "team_id": "t8",
+    "position": "FW",
+    "nationality": "Switzerland",
+    "nationality_ar": "Switzerland",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-12-jmcginn",
+    "name": "J. McGinn",
+    "name_ar": "J. McGinn",
+    "team_id": "t12",
+    "position": "FW",
+    "nationality": "Scotland",
+    "nationality_ar": "Scotland",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-3-ibhwang",
+    "name": "I.B. Hwang",
+    "name_ar": "I.B. Hwang",
+    "team_id": "t3",
+    "position": "FW",
+    "nationality": "South Korea",
+    "nationality_ar": "South Korea",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-3-hgoh",
+    "name": "H.G. Oh",
+    "name_ar": "H.G. Oh",
+    "team_id": "t3",
+    "position": "FW",
+    "nationality": "South Korea",
+    "nationality_ar": "South Korea",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-4-lkrej",
+    "name": "L. Krejčí",
+    "name_ar": "L. Krejčí",
+    "team_id": "t4",
+    "position": "FW",
+    "nationality": "Czech Republic",
+    "nationality_ar": "Czech Republic",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-13-dbobadilla",
+    "name": "D. Bobadilla",
+    "name_ar": "D. Bobadilla",
+    "team_id": "t13",
+    "position": "FW",
+    "nationality": "United States",
+    "nationality_ar": "United States",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-13-fbalogun",
+    "name": "F. Balogun",
+    "name_ar": "F. Balogun",
+    "team_id": "t13",
+    "position": "FW",
+    "nationality": "United States",
+    "nationality_ar": "United States",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-14-maurcio",
+    "name": "Maurício",
+    "name_ar": "Maurício",
+    "team_id": "t14",
+    "position": "FW",
+    "nationality": "Paraguay",
+    "nationality_ar": "Paraguay",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-33-kmbapp",
+    "name": "K. Mbappé",
+    "name_ar": "كيليان مبابي",
+    "team_id": "t33",
+    "position": "FW",
+    "nationality": "France",
+    "nationality_ar": "France",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-33-bbarcola",
+    "name": "B. Barcola",
+    "name_ar": "B. Barcola",
+    "team_id": "t33",
+    "position": "FW",
+    "nationality": "France",
+    "nationality_ar": "France",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-34-imbaye905",
+    "name": "I. Mbaye 90+5'",
+    "name_ar": "I. Mbaye 90+5'",
+    "team_id": "t34",
+    "position": "FW",
+    "nationality": "Senegal",
+    "nationality_ar": "Senegal",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-35-aymenhussein",
+    "name": "Aymen Hussein",
+    "name_ar": "Aymen Hussein",
+    "team_id": "t35",
+    "position": "FW",
+    "nationality": "Iraq",
+    "nationality_ar": "Iraq",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-36-erlinghaaland",
+    "name": "Erling Haaland",
+    "name_ar": "إيرلينغ هالاند",
+    "team_id": "t36",
+    "position": "FW",
+    "nationality": "Norway",
+    "nationality_ar": "Norway",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-36-leostigrd",
+    "name": "Leo Østigård",
+    "name_ar": "Leo Østigård",
+    "team_id": "t36",
+    "position": "FW",
+    "nationality": "Norway",
+    "nationality_ar": "Norway",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-19-adiallo",
+    "name": "A. Diallo",
+    "name_ar": "A. Diallo",
+    "team_id": "t19",
+    "position": "FW",
+    "nationality": "Ivory Coast",
+    "nationality_ar": "Ivory Coast",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-17-felixnmecha",
+    "name": "Felix Nmecha",
+    "name_ar": "Felix Nmecha",
+    "team_id": "t17",
+    "position": "FW",
+    "nationality": "Germany",
+    "nationality_ar": "Germany",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-17-nschlotterbeck",
+    "name": "N. Schlotterbeck",
+    "name_ar": "N. Schlotterbeck",
+    "team_id": "t17",
+    "position": "FW",
+    "nationality": "Germany",
+    "nationality_ar": "Germany",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-17-jmusiala",
+    "name": "J. Musiala",
+    "name_ar": "J. Musiala",
+    "team_id": "t17",
+    "position": "FW",
+    "nationality": "Germany",
+    "nationality_ar": "Germany",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-17-nbrown",
+    "name": "N. Brown",
+    "name_ar": "N. Brown",
+    "team_id": "t17",
+    "position": "FW",
+    "nationality": "Germany",
+    "nationality_ar": "Germany",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-17-dundav",
+    "name": "D. Undav",
+    "name_ar": "D. Undav",
+    "team_id": "t17",
+    "position": "FW",
+    "nationality": "Germany",
+    "nationality_ar": "Germany",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-17-khavertz",
+    "name": "K. Havertz",
+    "name_ar": "K. Havertz",
+    "team_id": "t17",
+    "position": "FW",
+    "nationality": "Germany",
+    "nationality_ar": "Germany",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-18-lcomenencia",
+    "name": "L. Comenencia",
+    "name_ar": "L. Comenencia",
+    "team_id": "t18",
+    "position": "FW",
+    "nationality": "Curaçao",
+    "nationality_ar": "Curaçao",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-23-yayari",
+    "name": "Y.Ayari",
+    "name_ar": "Y.Ayari",
+    "team_id": "t23",
+    "position": "FW",
+    "nationality": "Sweden",
+    "nationality_ar": "Sweden",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-23-aisak",
+    "name": "A. Isak",
+    "name_ar": "A. Isak",
+    "team_id": "t23",
+    "position": "FW",
+    "nationality": "Sweden",
+    "nationality_ar": "Sweden",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-23-vgykeres",
+    "name": "V. Gyökeres",
+    "name_ar": "V. Gyökeres",
+    "team_id": "t23",
+    "position": "FW",
+    "nationality": "Sweden",
+    "nationality_ar": "Sweden",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-23-msvanberg",
+    "name": "M. Svanberg",
+    "name_ar": "M. Svanberg",
+    "team_id": "t23",
+    "position": "FW",
+    "nationality": "Sweden",
+    "nationality_ar": "Sweden",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-24-orekik",
+    "name": "O. Rekik",
+    "name_ar": "O. Rekik",
+    "team_id": "t24",
+    "position": "FW",
+    "nationality": "Tunisia",
+    "nationality_ar": "Tunisia",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-9-vjnior",
+    "name": "V. Júnior",
+    "name_ar": "V. Júnior",
+    "team_id": "t9",
+    "position": "FW",
+    "nationality": "Brazil",
+    "nationality_ar": "Brazil",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-10-isaibari",
+    "name": "I. Saibari",
+    "name_ar": "I. Saibari",
+    "team_id": "t10",
+    "position": "FW",
+    "nationality": "Morocco",
+    "nationality_ar": "Morocco",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-21-virgilvandijk",
+    "name": "Virgil van Dijk",
+    "name_ar": "Virgil van Dijk",
+    "team_id": "t21",
+    "position": "FW",
+    "nationality": "Netherlands",
+    "nationality_ar": "Netherlands",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-21-csummerville",
+    "name": "C. Summerville",
+    "name_ar": "C. Summerville",
+    "team_id": "t21",
+    "position": "FW",
+    "nationality": "Netherlands",
+    "nationality_ar": "Netherlands",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-22-knakamura",
+    "name": "K. Nakamura",
+    "name_ar": "K. Nakamura",
+    "team_id": "t22",
+    "position": "FW",
+    "nationality": "Japan",
+    "nationality_ar": "Japan",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-22-kogawa",
+    "name": "K. Ogawa",
+    "name_ar": "K. Ogawa",
+    "team_id": "t22",
+    "position": "FW",
+    "nationality": "Japan",
+    "nationality_ar": "Japan",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-31-abdulelahalamri",
+    "name": "Abdulelah Al-Amri",
+    "name_ar": "Abdulelah Al-Amri",
+    "team_id": "t31",
+    "position": "FW",
+    "nationality": "Saudi Arabia",
+    "nationality_ar": "Saudi Arabia",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-32-maximilianoarajo",
+    "name": "Maximiliano Araújo",
+    "name_ar": "Maximiliano Araújo",
+    "team_id": "t32",
+    "position": "FW",
+    "nationality": "Uruguay",
+    "nationality_ar": "Uruguay",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-39-rvmanvashmid",
+    "name": "Rvmanv Ashmid",
+    "name_ar": "Rvmanv Ashmid",
+    "team_id": "t39",
+    "position": "FW",
+    "nationality": "Austria",
+    "nationality_ar": "Austria",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-39-iznalarb",
+    "name": "Izn Alarb",
+    "name_ar": "Izn Alarb",
+    "team_id": "t39",
+    "position": "FW",
+    "nationality": "Austria",
+    "nationality_ar": "Austria",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-40-aliavlvan",
+    "name": "Ali Avlvan",
+    "name_ar": "Ali Avlvan",
+    "team_id": "t40",
+    "position": "FW",
+    "nationality": "Jordan",
+    "nationality_ar": "Jordan",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-5-clarin",
+    "name": "C. Larin",
+    "name_ar": "C. Larin",
+    "team_id": "t5",
+    "position": "FW",
+    "nationality": "Canada",
+    "nationality_ar": "Canada",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-6-jovoluki",
+    "name": "Jovo Lukić",
+    "name_ar": "Jovo Lukić",
+    "team_id": "t6",
+    "position": "FW",
+    "nationality": "Bosnia and Herzegovina",
+    "nationality_ar": "Bosnia and Herzegovina",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-27-raminrezaiian",
+    "name": "Ramin Rezaiian",
+    "name_ar": "Ramin Rezaiian",
+    "team_id": "t27",
+    "position": "FW",
+    "nationality": "Iran",
+    "nationality_ar": "Iran",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-27-mohammadmohebi",
+    "name": "Mohammad Mohebi",
+    "name_ar": "Mohammad Mohebi",
+    "team_id": "t27",
+    "position": "FW",
+    "nationality": "Iran",
+    "nationality_ar": "Iran",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-28-elijahjust",
+    "name": "Elijah Just",
+    "name_ar": "Elijah Just",
+    "team_id": "t28",
+    "position": "FW",
+    "nationality": "New Zealand",
+    "nationality_ar": "New Zealand",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-37-lionelmessi",
+    "name": "Lionel Messi",
+    "name_ar": "ليونيل ميسي",
+    "team_id": "t37",
+    "position": "FW",
+    "nationality": "Argentina",
+    "nationality_ar": "Argentina",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-25-mohamedhany",
+    "name": "Mohamed Hany",
+    "name_ar": "Mohamed Hany",
+    "team_id": "t25",
+    "position": "FW",
+    "nationality": "Belgium",
+    "nationality_ar": "Belgium",
+    "photo": "⚽",
+    "number": 9
+  },
+  {
+    "id": "p-26-emamashour",
+    "name": "Emam Ashour",
+    "name_ar": "Emam Ashour",
+    "team_id": "t26",
+    "position": "FW",
+    "nationality": "Egypt",
+    "nationality_ar": "Egypt",
+    "photo": "⚽",
+    "number": 9
+  }
+];
 
-// ===== Top scorers/assists (empty — tournament hasn't started) =====
-export const TOP_SCORERS: TopScorerRow[] = [];
+// ===== Top scorers/assists (from live data) =====
+export const TOP_SCORERS: TopScorerRow[] = [
+  {
+    "player_id": "p-37-lionelmessi",
+    "team_id": "t37",
+    "goals": 3,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-36-erlinghaaland",
+    "team_id": "t36",
+    "goals": 2,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-28-elijahjust",
+    "team_id": "t28",
+    "goals": 2,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-15-nestoryirankunda",
+    "team_id": "t15",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-15-cmetcalfe",
+    "team_id": "t15",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-7-bkhoukhi905",
+    "team_id": "t7",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-8-breelembolo",
+    "team_id": "t8",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-12-jmcginn",
+    "team_id": "t12",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-3-ibhwang",
+    "team_id": "t3",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-3-hgoh",
+    "team_id": "t3",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-4-lkrej",
+    "team_id": "t4",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-13-dbobadilla",
+    "team_id": "t13",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-13-fbalogun",
+    "team_id": "t13",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-14-maurcio",
+    "team_id": "t14",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-33-kmbapp",
+    "team_id": "t33",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-33-bbarcola",
+    "team_id": "t33",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-34-imbaye905",
+    "team_id": "t34",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-35-aymenhussein",
+    "team_id": "t35",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-36-leostigrd",
+    "team_id": "t36",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-19-adiallo",
+    "team_id": "t19",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-17-felixnmecha",
+    "team_id": "t17",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-17-nschlotterbeck",
+    "team_id": "t17",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-17-jmusiala",
+    "team_id": "t17",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-17-nbrown",
+    "team_id": "t17",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-17-dundav",
+    "team_id": "t17",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-17-khavertz",
+    "team_id": "t17",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-18-lcomenencia",
+    "team_id": "t18",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-23-yayari",
+    "team_id": "t23",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-23-aisak",
+    "team_id": "t23",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-23-vgykeres",
+    "team_id": "t23",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-23-msvanberg",
+    "team_id": "t23",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-24-orekik",
+    "team_id": "t24",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-9-vjnior",
+    "team_id": "t9",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-10-isaibari",
+    "team_id": "t10",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-21-virgilvandijk",
+    "team_id": "t21",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-21-csummerville",
+    "team_id": "t21",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-22-knakamura",
+    "team_id": "t22",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-22-kogawa",
+    "team_id": "t22",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-31-abdulelahalamri",
+    "team_id": "t31",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-32-maximilianoarajo",
+    "team_id": "t32",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-39-rvmanvashmid",
+    "team_id": "t39",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-39-iznalarb",
+    "team_id": "t39",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-40-aliavlvan",
+    "team_id": "t40",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-5-clarin",
+    "team_id": "t5",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-6-jovoluki",
+    "team_id": "t6",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-27-raminrezaiian",
+    "team_id": "t27",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-27-mohammadmohebi",
+    "team_id": "t27",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-25-mohamedhany",
+    "team_id": "t25",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  },
+  {
+    "player_id": "p-26-emamashour",
+    "team_id": "t26",
+    "goals": 1,
+    "assists": 0,
+    "penalties": 0,
+    "matches_played": 1
+  }
+];
 export const TOP_ASSISTS: TopAssistRow[] = [];
 
 // ===== Index lookups =====
 export const TEAM_BY_ID: Record<string, Team> = TEAMS.reduce((acc, t) => { acc[t.id] = t; return acc; }, {} as Record<string, Team>);
-export const PLAYER_BY_ID: Record<string, Player> = {};
+export const PLAYER_BY_ID: Record<string, Player> = PLAYERS.reduce((acc, p) => { acc[p.id] = p; return acc; }, {} as Record<string, Player>);
 export const MATCH_BY_ID: Record<string, Match> = ALL_MATCHES.reduce((acc, m) => { acc[m.id] = m; return acc; }, {} as Record<string, Match>);
 export const STADIUM_BY_ID: Record<string, Stadium> = STADIUMS.reduce((acc, s) => { acc[s.id] = s; return acc; }, {} as Record<string, Stadium>);
 export const TEAMS_BY_GROUP: Record<string, Team[]> = TEAMS.reduce((acc, t) => {

@@ -24,6 +24,7 @@ const sb = createClient(url, serviceKey, {
 import {
   TEAMS, PLAYERS, ALL_MATCHES, STANDINGS, TOP_SCORERS, TOP_ASSISTS, STADIUMS,
 } from '../../src/lib/wc/data';
+import { MATCH_EVENTS } from '../../src/lib/wc/data-aux';
 
 async function upsert<T>(table: string, rows: T[], label: string, onConflict = 'id') {
   if (rows.length === 0) {
@@ -104,18 +105,18 @@ async function main() {
   }));
   await upsert('matches', matches, 'matches');
 
-  // 5. Match events — ensure team_id is null if missing, no id conflict
+  // 5. Match events — from data-aux.ts (extracted from scorers)
   console.log('⚡ Match events...');
-  const events = ALL_MATCHES.flatMap(m => (m.events ?? []).map(ev => ({
+  const events = (MATCH_EVENTS as any[]).map(ev => ({
     id: ev.id,
-    match_id: ev.match_id,
-    team_id: ev.team_id || null,
+    match_id: ev.matchId || ev.match_id,
+    team_id: ev.teamId || ev.team_id || null,
     type: ev.type,
     player: ev.player,
-    player_ar: ev.player_ar,
+    player_ar: ev.playerAr || ev.player_ar,
     minute: ev.minute,
     detail: ev.detail,
-  })));
+  }));
   // Upsert in small batches (avoid payload size limits)
   const BATCH = 100;
   let eventsOk = 0, eventsFail = 0;

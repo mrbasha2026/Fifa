@@ -184,7 +184,175 @@ async function main() {
   console.log(`\n🔄 Sync from worldcup26.ir started at ${new Date().toISOString()}\n`);
   await syncMatches();
   await syncStandings();
+  await syncPlayersAndEvents();
+  await syncTopScorers();
   console.log(`\n✅ Sync complete at ${new Date().toISOString()}\n`);
+}
+
+// ===== Parse scorers string =====
+function parseScorers(s: string): Array<{ name: string; minute: number; detail?: string }> {
+  if (!s || s === 'null') return [];
+  const result: Array<{ name: string; minute: number; detail?: string }> = [];
+  const regex = /"([^"]+?)\s+(\d+)'(?:\s*\(([^)]+)\))?"/g;
+  let match;
+  while ((match = regex.exec(s)) !== null) {
+    const [, name, minuteStr, detail] = match;
+    result.push({
+      name: name.trim(),
+      minute: parseInt(minuteStr),
+      detail: detail ? detail.trim() : undefined,
+    });
+  }
+  if (result.length === 0) {
+    const simple = s.match(/"([^"]+)"/g);
+    if (simple) {
+      simple.forEach(entry => {
+        const name = entry.replace(/"/g, '').trim();
+        if (name) result.push({ name, minute: 45 });
+      });
+    }
+  }
+  return result;
+}
+
+// ===== Sync players + events + scorers from matches =====
+async function syncPlayersAndEvents() {
+  console.log('👤⚡ Syncing players and events...');
+  try {
+    const matches: any[] = await apiGet('/get/games');
+    const finished = matches.filter(m => m.finished === 'TRUE' || m.finished === true);
+    console.log(`   ${finished.length} finished matches to process`);
+
+    const playersMap = new Map<string, any>();
+    const events: any[] = [];
+
+    finished.forEach(m => {
+      const matchId = `m${m.id}`;
+      const homeScorers = parseScorers(m.home_scorers);
+      const awayScorers = parseScorers(m.away_scorers);
+
+      homeScorers.forEach((s, idx) => {
+        const playerId = `p-${m.home_team_id}-${s.name.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20)}`;
+        if (!playersMap.has(playerId)) {
+          playersMap.set(playerId, {
+            id: playerId,
+            name: s.name,
+            name_ar: s.name,
+            team_id: `t${m.home_team_id}`,
+            position: 'FW',
+            nationality: m.home_team_name_en || '',
+            nationality_ar: m.home_team_name_en || '',
+            photo: '⚽',
+            number: 9,
+          });
+        }
+        events.push({
+          id: `${matchId}-g-${s.minute}-${idx}`,
+          match_id: matchId,
+          team_id: `t${m.home_team_id}`,
+          type: 'goal',
+          player: s.name,
+          player_ar: s.name,
+          minute: s.minute,
+          detail: s.detail,
+        });
+      });
+
+      awayScorers.forEach((s, idx) => {
+        const playerId = `p-${m.away_team_id}-${s.name.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20)}`;
+        if (!playersMap.has(playerId)) {
+          playersMap.set(playerId, {
+            id: playerId,
+            name: s.name,
+            name_ar: s.name,
+            team_id: `t${m.away_team_id}`,
+            position: 'FW',
+            nationality: m.away_team_name_en || '',
+            nationality_ar: m.away_team_name_en || '',
+            photo: '⚽',
+            number: 9,
+          });
+        }
+        events.push({
+          id: `${matchId}-g-${s.minute}-${idx}-away`,
+          match_id: matchId,
+          team_id: `t${m.away_team_id}`,
+          type: 'goal',
+          player: s.name,
+          player_ar: s.name,
+          minute: s.minute,
+          detail: s.detail,
+        });
+      });
+    });
+
+    // Upsert players
+    const players = Array.from(playersMap.values());
+    if (players.length > 0) {
+      const { error } = await sb.from('players').upsert(players, { onConflict: 'id' });
+      if (error) throw error;
+    }
+    console.log(`   ✅ ${players.length} players synced`);
+
+    // Upsert events in batches
+    const BATCH = 100;
+    let eventsOk = 0;
+    for (let i = 0; i < events.length; i += BATCH) {
+      const batch = events.slice(i, i + BATCH);
+      const { error } = await sb.from('match_events').upsert(batch, { onConflict: 'id' });
+      if (error) console.error(`   ⚠️ events batch ${i}:`, error.message);
+      else eventsOk += batch.length;
+    }
+    console.log(`   ✅ ${eventsOk}/${events.length} events synced`);
+
+    await updateSyncState('players', 'success', players.length);
+    await updateSyncState('events', 'success', eventsOk);
+  } catch (e: any) {
+    console.error('   ❌ players/events:', e.message);
+    await updateSyncState('players', 'error', 0, e.message);
+  }
+}
+
+// ===== Sync top scorers (aggregated from events) =====
+async function syncTopScorers() {
+  console.log('🎯 Syncing top scorers...');
+  try {
+    // Read events from Supabase to aggregate
+    const { data: events, error } = await sb.from('match_events').select('player, team_id, match_id');
+    if (error) throw error;
+
+    const scorersMap = new Map<string, { player_id: string; team_id: string; goals: number; matches: Set<string> }>();
+    (events || []).forEach((ev: any) => {
+      const key = ev.player;
+      if (!scorersMap.has(key)) {
+        const playerId = `p-${ev.team_id.replace('t', '')}-${ev.player.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20)}`;
+        scorersMap.set(key, { player_id: playerId, team_id: ev.team_id, goals: 0, matches: new Set() });
+      }
+      scorersMap.get(key)!.goals++;
+      scorersMap.get(key)!.matches.add(ev.match_id);
+    });
+
+    const rows = Array.from(scorersMap.values()).map(s => ({
+      player_id: s.player_id,
+      team_id: s.team_id,
+      goals: s.goals,
+      assists: 0,
+      penalties: 0,
+      matches_played: s.matches.size,
+    }));
+
+    // Clear and re-insert
+    await sb.from('top_scorers').delete().gte('goals', 0);
+    if (rows.length > 0) {
+      const { error: e2 } = await sb.from('top_scorers').upsert(rows, { onConflict: 'player_id' });
+      if (e2) throw e2;
+    }
+    console.log(`   ✅ ${rows.length} top scorers synced`);
+    await updateSyncState('top_scorers', 'success', rows.length);
+  } catch (e: any) {
+    console.error('   ❌ top_scorers:', e.message);
+    await updateSyncState('top_scorers', 'error', 0, e.message);
+  }
 }
 
 main().catch(err => {
