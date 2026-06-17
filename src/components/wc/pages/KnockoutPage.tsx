@@ -479,9 +479,9 @@ function TeamRow({
   const { lang } = useThemeStore();
   if (!team) {
     return (
-      <div className="flex items-center gap-2 py-1.5 px-1 rounded text-xs opacity-40">
-        <span className="h-4 w-6 rounded bg-muted" />
-        <span className="text-muted-foreground italic text-[11px]">—</span>
+      <div className="flex items-center gap-2 py-1.5 px-1 rounded text-xs opacity-50">
+        <span className="h-3.5 w-5 rounded bg-muted/60 border border-dashed border-border" />
+        <span className="text-muted-foreground italic text-[11px]">{lang === 'ar' ? 'بانتظار التحديد' : 'TBD'}</span>
       </div>
     );
   }

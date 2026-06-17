@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useNavStore, useThemeStore } from '@/lib/stores/wc-stores';
 import { Header, Footer } from '@/components/wc/Header';
+import { DataStatusBanner } from '@/components/wc/DataStatusBanner';
 import { HomePage } from '@/components/wc/pages/HomePage';
 import { MatchesPage } from '@/components/wc/pages/MatchesPage';
 import { MatchDetailsPage } from '@/components/wc/pages/MatchDetailsPage';
@@ -34,6 +35,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
+      <DataStatusBanner />
       <Header />
       <main className="flex-1 mx-auto w-full max-w-[1400px] px-4 lg:px-6 py-6">
         {page === 'home' && <HomePage />}

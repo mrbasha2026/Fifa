@@ -20,14 +20,14 @@ export function TeamLogo({
   if (!team) {
     return (
       <div className={cn(
-        'rounded-full bg-muted flex items-center justify-center text-muted-foreground/50',
-        size === 'xs' && 'h-6 w-6 text-base',
-        size === 'sm' && 'h-8 w-8 text-lg',
-        size === 'md' && 'h-10 w-10 text-xl',
-        size === 'lg' && 'h-14 w-14 text-2xl',
-        size === 'xl' && 'h-20 w-20 text-4xl',
+        'rounded-full bg-muted/60 border border-dashed border-border/50 flex items-center justify-center text-muted-foreground/70 font-bold',
+        size === 'xs' && 'h-6 w-6 text-[8px]',
+        size === 'sm' && 'h-8 w-8 text-[9px]',
+        size === 'md' && 'h-10 w-10 text-[10px]',
+        size === 'lg' && 'h-14 w-14 text-xs',
+        size === 'xl' && 'h-20 w-20 text-sm',
       )}>
-        ?
+        TBD
       </div>
     );
   }
@@ -69,7 +69,7 @@ export function TeamLogo({
 
 export function LocalizedTeamName({ team }: { team?: Team | null }) {
   const { lang } = useThemeStore();
-  if (!team) return <span className="text-muted-foreground italic">—</span>;
+  if (!team) return <span className="text-muted-foreground/60 italic text-xs">{lang === 'ar' ? 'بانتظار التحديد' : 'TBD'}</span>;
   return <>{lang === 'ar' ? team.name_ar : team.name}</>;
 }
 
@@ -103,7 +103,8 @@ export function StatusBadge({ match, small = false }: { match: Match; small?: bo
     default:
       const time = formatTime(match.date, lang);
       const date = formatDate(match.date, lang);
-      label = small ? time : `${date} · ${time}`;
+      // Always show date + time for clarity (even in small mode)
+      label = `${date} · ${time}`;
       cls = 'bg-secondary text-secondary-foreground border border-border';
       break;
   }
